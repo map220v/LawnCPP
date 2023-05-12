@@ -24,7 +24,7 @@ class Reanimation;
 class ReanimatorCache
 {
 public:
-	std::map<int, MemoryImage* >mPlantImages;
+	MemoryImage*			mPlantImages[SeedType::NUM_SEED_TYPES];
     ImageVariationList      mImageVariationList;
     MemoryImage*            mLawnMowers[LawnMowerType::NUM_MOWER_TYPES];
     MemoryImage*            mZombieImages[ZombieType::NUM_CACHED_ZOMBIE_TYPES];

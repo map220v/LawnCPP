@@ -417,7 +417,7 @@ int TodAnimateCurve(int theTimeStart, int theTimeEnd, int theTimeAge, int thePos
 
 int RandRangeInt(int theMin, int theMax)
 {
-	//TOD_ASSERT(theMin <= theMax);
+	TOD_ASSERT(theMin <= theMax);
 	return Rand(theMax - theMin + 1) + theMin;
 }
 

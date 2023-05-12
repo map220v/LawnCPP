@@ -20,26 +20,7 @@
 #include "../../SexyAppFramework/MTRand.h"
 #include "../../Sexy.TodLib/TodStringFile.h"
 #include "../../SexyAppFramework/WidgetManager.h"
-#include "../../SexyAppFramework/SexyMatrix.h"
-#include <iostream>	
-void KopieScrollbarWidget::DrawThumb(Graphics* g, int theX, int theY, int theWidth, int theHeight)
-{
-	g->DrawImageRotated(IMAGE_OPTIONS_SLIDERKNOB2, theX+4, theY, DEG_TO_RAD(90));
-}
-void KopieScrollbarWidget::Draw(Graphics* g)
-{
-	int aThumbSize = GetThumbSize();
-	int aThumbPosition = GetThumbPosition();
-	/// Kopie: i left of here on 20.11.2022 0:56
-	Sexy::Transform transform = Sexy::Transform();
-	transform.RotateDeg(-90);
-	transform.Scale( -( (mWidth - 29)/10), mHeight/ IMAGE_OPTIONS_SLIDERSLOT->mHeight/13);
-	g->DrawImageTransform(IMAGE_OPTIONS_SLIDERSLOT, transform, Sexy::Rect(0,0,IMAGE_OPTIONS_SLIDERSLOT->mWidth, IMAGE_OPTIONS_SLIDERSLOT->mHeight), 12, 169);
-	if (aThumbSize > 0)
-		DrawThumb(g, 0, aThumbPosition, (mWidth - 29), aThumbSize);
-	this->mDownButton->SetVisible(false);
-	this->mUpButton->SetVisible(false);
-}
+
 //0x483380
 SeedChooserScreen::SeedChooserScreen()
 {
@@ -153,12 +134,9 @@ SeedChooserScreen::SeedChooserScreen()
 		mStoreButton->mBtnNoDraw = true;
 		mStoreButton->mDisabled = true;
 	}
-	mScrollbarWidget = new KopieScrollbarWidget(this);
-	mScrollbarWidget->ResizeScrollbar(440, 120, 20, 320);
-	mScrollbarWidget->SetMaxValue( ceil(((NUM_SEED_TYPES- VANILLA_NUM_SEEDS_IN_CHOOSER)/8.0f)));
-	AddWidget(mScrollbarWidget);
-	//DBG_ASSERT(mApp->GetSeedsAvailable() < NUM_SEED_TYPES);
-	memset(mChosenSeeds, 0, NUM_SEEDS_IN_CHOOSER* sizeof(ChosenSeed));
+
+	DBG_ASSERT(mApp->GetSeedsAvailable() < NUM_SEED_TYPES);
+	memset(mChosenSeeds, 0, sizeof(mChosenSeeds));
 	for (SeedType aSeedType = SEED_PEASHOOTER; aSeedType < NUM_SEEDS_IN_CHOOSER; aSeedType = (SeedType)(aSeedType + 1))
 	{
 		ChosenSeed& aChosenSeed = mChosenSeeds[aSeedType];
@@ -224,7 +202,7 @@ int SeedChooserScreen::PickFromWeightedArrayUsingSpecialRandSeed(TodWeightedArra
 //0x483F70
 void SeedChooserScreen::CrazyDavePickSeeds()
 {
-	TodWeightedArray* aSeedArray=new TodWeightedArray[NUM_SEED_TYPES];
+	TodWeightedArray aSeedArray[NUM_SEED_TYPES];
 	for (SeedType aSeedType = SEED_PEASHOOTER; aSeedType < NUM_SEEDS_IN_CHOOSER; aSeedType = (SeedType)(aSeedType + 1))
 	{
 		aSeedArray[aSeedType].mItem = aSeedType;
@@ -293,7 +271,6 @@ void SeedChooserScreen::GetSeedPositionInChooser(int theIndex, int& x, int& y)
 	}
 	else
 	{
-		if (theIndex > SEED_IMITATER)theIndex--;
 		int aRow = theIndex / 8;
 		int aCol = theIndex % 8;
 
@@ -327,11 +304,6 @@ SeedChooserScreen::~SeedChooserScreen()
 	if (mStoreButton) delete mStoreButton;
 	if (mToolTip) delete mToolTip;
 	if (mMenuButton) delete mMenuButton;
-	if (mScrollbarWidget)
-	{
-		RemoveWidget(mScrollbarWidget);
-		delete mScrollbarWidget;
-	}
 }
 
 //0x4845E0
@@ -373,26 +345,19 @@ void SeedChooserScreen::Draw(Graphics* g)
 	}
 	TodDrawString(g, _S("[CHOOSE_YOUR_SEEDS]"), 229, 110, Sexy::FONT_DWARVENTODCRAFT18YELLOW, Color::White, DS_ALIGN_CENTER);
 
-	int aNumSeeds = NUM_SEEDS_IN_CHOOSER;
+	int aNumSeeds = Has7Rows() ? 48 : 40;
 	for (SeedType aSeedShadow = SEED_PEASHOOTER; aSeedShadow < aNumSeeds; aSeedShadow = (SeedType)(aSeedShadow + 1))
 	{
 		int x, y;
-		SeedType theIndex =(SeedType) (aSeedShadow - ((SeedType)(8 * mScrollbarWidget->mValue)));
-		if (aSeedShadow > SEED_IMITATER)theIndex= (SeedType)(theIndex-1);
-		GetSeedPositionInChooser(theIndex, x, y);
-		if (theIndex == SEED_IMITATER)
+		GetSeedPositionInChooser(aSeedShadow, x, y);
+		if (aSeedShadow == SEED_IMITATER)
 		{
 			continue;
 		}
-		ChosenSeed& aChosenSeed = mChosenSeeds[aSeedShadow];
 
-		if (theIndex < 0)
-			continue;
-		if (theIndex > VANILLA_NUM_SEEDS_IN_CHOOSER)
-			continue;
-
-		if (mApp->SeedTypeAvailable(theIndex))
+		if (mApp->SeedTypeAvailable(aSeedShadow))
 		{
+			ChosenSeed& aChosenSeed = mChosenSeeds[aSeedShadow];
 			if (aChosenSeed.mSeedState != SEED_IN_CHOOSER)
 			{
 				DrawSeedPacket(g, x, y, aSeedShadow, SEED_NONE, 0, 55, true, false);
@@ -403,8 +368,6 @@ void SeedChooserScreen::Draw(Graphics* g)
 			g->DrawImage(Sexy::IMAGE_SEEDPACKETSILHOUETTE, x, y);
 		}
 	}
-
-
 
 	int aNumSeedsInBank = mBoard->mSeedBank->mNumPackets;
 	for (int anIndex = 0; anIndex < aNumSeedsInBank; anIndex++)
@@ -436,41 +399,6 @@ void SeedChooserScreen::Draw(Graphics* g)
 				aPosX -= mX;
 				aPosY -= mY;
 			}
-
-			SeedType theIndex = (SeedType)(aChosenSeed.mSeedType - ((SeedType)(8 * mScrollbarWidget->mValue)));
-			if (aChosenSeed.mSeedState!=SEED_IN_BANK&& theIndex < 0)
-				continue;
-			if (aChosenSeed.mSeedState != SEED_IN_BANK && theIndex > VANILLA_NUM_SEEDS_IN_CHOOSER)
-				continue;
-			DrawSeedPacket(g, aPosX, aPosY, aChosenSeed.mSeedType, aChosenSeed.mImitaterType, 0, aGrayed ? 115 : 255, true, false);
-		}
-	}
-
-	for (SeedType aSeedType = SEED_PEASHOOTER; aSeedType < NUM_SEEDS_IN_CHOOSER; aSeedType = (SeedType)(aSeedType + 1))
-	{
-		ChosenSeed& aChosenSeed = mChosenSeeds[aSeedType];
-		ChosenSeedState aSeedState = aChosenSeed.mSeedState;
-		if (mApp->SeedTypeAvailable(aSeedType) && aSeedState != SEED_FLYING_TO_BANK && aSeedState != SEED_FLYING_TO_CHOOSER &&
-			aSeedState != SEED_PACKET_HIDDEN && (aSeedState == SEED_IN_CHOOSER || mBoard->mCutScene->mSeedChoosing))
-		{
-			bool aGrayed = false;
-			if (((SeedNotRecommendedToPick(aSeedType) || SeedNotAllowedToPick(aSeedType)) && aSeedState == SEED_IN_CHOOSER) ||
-				SeedNotAllowedDuringTrial(aSeedType))
-				aGrayed = true;
-
-			int aPosX = aChosenSeed.mX;
-			int aPosY = aChosenSeed.mY;
-			if (aSeedState == SEED_IN_BANK)
-			{
-				aPosX -= mX;
-				aPosY -= mY;
-			}
-
-			SeedType theIndex = (SeedType)(aChosenSeed.mSeedType - ((SeedType)(8 * mScrollbarWidget->mValue)));
-			if (aChosenSeed.mSeedState != SEED_IN_BANK && theIndex < 0)
-				continue;
-			if (aChosenSeed.mSeedState != SEED_IN_BANK && theIndex > VANILLA_NUM_SEEDS_IN_CHOOSER)
-				continue;
 			DrawSeedPacket(g, aPosX, aPosY, aChosenSeed.mSeedType, aChosenSeed.mImitaterType, 0, aGrayed ? 115 : 255, true, false);
 		}
 	}
@@ -609,16 +537,6 @@ void SeedChooserScreen::Update()
 				}
 			}
 		}
-	}
-
-
-	for (SeedType aSeedType = SEED_PEASHOOTER; aSeedType < NUM_SEEDS_IN_CHOOSER; aSeedType = (SeedType)(aSeedType + 1))
-	{
-		ChosenSeed& aChosenSeed = mChosenSeeds[aSeedType];
-		if (aChosenSeed.mSeedState != SEED_IN_CHOOSER)continue;
-		int theIndex = aSeedType - 8 * mScrollbarWidget->mValue;
-		if (mScrollbarWidget->mValue>0&&aSeedType > SEED_IMITATER)theIndex--;
-		GetSeedPositionInChooser(theIndex, aChosenSeed.mX, aChosenSeed.mY);
 	}
 
 	ShowToolTip();
@@ -1018,12 +936,7 @@ void SeedChooserScreen::ShowToolTip()
 				}
 				else
 				{
-					SeedType theIndex = (SeedType)(aChosenSeed.mSeedType - ((SeedType)(8 * mScrollbarWidget->mValue)));
-					if (aChosenSeed.mSeedState != SEED_IN_BANK && theIndex < 0)
-						return;
-					if (aChosenSeed.mSeedState != SEED_IN_BANK && theIndex > VANILLA_NUM_SEEDS_IN_CHOOSER)
-						return;
-					GetSeedPositionInChooser(theIndex, aSeedX, aSeedY);
+					GetSeedPositionInChooser(aSeedType, aSeedX, aSeedY);
 				}
 
 				mToolTip->mX = ClampInt((SEED_PACKET_WIDTH - mToolTip->mWidth) / 2 + aSeedX, 0, BOARD_WIDTH - mToolTip->mWidth);
@@ -1210,10 +1123,6 @@ void SeedChooserScreen::CloseSeedChooser()
 		}
 	}
 	mBoard->mCutScene->EndSeedChooser();
-}
-
- void			SeedChooserScreen::MouseWheel(int theDelta) {
-	 mScrollbarWidget->MouseWheel(theDelta);
 }
 
 //0x486E80

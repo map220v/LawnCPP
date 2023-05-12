@@ -1325,8 +1325,6 @@ bool LawnApp::ChangeDirHook(const char* theIntendedPath)
 //0x4522B0
 void LawnApp::Start()
 {
-	mTodCheatKeys = true;
-	mDebugKeysEnabled = true;
 	if (mLoadingFailed)
 		return;
 
@@ -2316,11 +2314,11 @@ int LawnApp::GetSeedsAvailable()
 	int aLevel = mPlayerInfo->GetLevel();
 	if (HasFinishedAdventure() || aLevel > 50)
 	{
-		return NUM_SEEDS_IN_CHOOSER;
+		return 49;
 	}
 
 	SeedType aSeedTypeMax = GetAwardSeedForLevel(aLevel);
-	return min(NUM_SEEDS_IN_CHOOSER, aSeedTypeMax);
+	return min(49, aSeedTypeMax);
 }
 
 //0x453B20
@@ -3045,7 +3043,7 @@ int LawnApp::GetNumPreloadingTasks()
 	int aTaskCount = 10;
 	if (mPlayerInfo)
 	{
-		for (SeedType i = SeedType::SEED_PEASHOOTER; i <NUM_SEED_TYPES; i = (SeedType)((int)i + 1))
+		for (SeedType i = SeedType::SEED_PEASHOOTER; i < SeedType::NUM_SEED_TYPES; i = (SeedType)((int)i + 1))
 		{
 			if (SeedTypeAvailable(i) || HasFinishedAdventure())
 			{
@@ -3101,7 +3099,7 @@ void LawnApp::PreloadForUser()
 
 	if (mPlayerInfo)
 	{
-		for (SeedType i = SeedType::SEED_PEASHOOTER; i <NUM_SEED_TYPES; i = (SeedType)((int)i + 1))
+		for (SeedType i = SeedType::SEED_PEASHOOTER; i < SeedType::NUM_SEED_TYPES; i = (SeedType)((int)i + 1))
 		{
 			if (SeedTypeAvailable(i) || HasFinishedAdventure())
 			{

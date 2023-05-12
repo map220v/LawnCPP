@@ -20,14 +20,8 @@
 #include "../Sexy.TodLib/TodParticle.h"
 #include "../Sexy.TodLib/EffectSystem.h"
 #include "../Sexy.TodLib/TodStringFile.h"
-#include <iostream>
 
-
-//Kopie: eeewwwww this will be re-re-re-done vanilla defs definitions
-//Kopie: tis was redone on 19.11.2022
-/*
-
-PlantDefinition gPlantDefs[NUM_SEED_TYPES] = {  //0x69F2B0
+PlantDefinition gPlantDefs[SeedType::NUM_SEED_TYPES] = {  //0x69F2B0
     { SeedType::SEED_PEASHOOTER,        nullptr, ReanimationType::REANIM_PEASHOOTER,    0,  100,    750,    PlantSubClass::SUBCLASS_SHOOTER,    150,    _S("PEASHOOTER") },
     { SeedType::SEED_SUNFLOWER,         nullptr, ReanimationType::REANIM_SUNFLOWER,     1,  50,     750,    PlantSubClass::SUBCLASS_NORMAL,     2500,   _S("SUNFLOWER") },
     { SeedType::SEED_CHERRYBOMB,        nullptr, ReanimationType::REANIM_CHERRYBOMB,    3,  150,    5000,   PlantSubClass::SUBCLASS_NORMAL,     0,      _S("CHERRY_BOMB") },
@@ -82,8 +76,6 @@ PlantDefinition gPlantDefs[NUM_SEED_TYPES] = {  //0x69F2B0
     { SeedType::SEED_SPROUT,            nullptr, ReanimationType::REANIM_ZENGARDEN_SPROUT,          33, 0,      3000,   PlantSubClass::SUBCLASS_NORMAL,     0,      _S("SPROUT") },
     { SeedType::SEED_LEFTPEATER,        nullptr, ReanimationType::REANIM_REPEATER,      5,  200,    750,    PlantSubClass::SUBCLASS_SHOOTER,    150,    _S("REPEATER") }
 };
-
-*/
 
 //0x401B20
 Plant::Plant()
@@ -2576,8 +2568,8 @@ void Plant::UpdateAbilities()
         return;
     }
 
-  //                                                    UpdateSquash();
-     if (mSeedType == SeedType::SEED_DOOMSHROOM)                                            UpdateDoomShroom();
+    if (mSeedType == SeedType::SEED_SQUASH)                                                     UpdateSquash();
+    else if (mSeedType == SeedType::SEED_DOOMSHROOM)                                            UpdateDoomShroom();
     else if (mSeedType == SeedType::SEED_ICESHROOM)                                             UpdateIceShroom();
     else if (mSeedType == SeedType::SEED_CHOMPER)                                               UpdateChomper();
     else if (mSeedType == SeedType::SEED_BLOVER)                                                UpdateBlover();
@@ -2598,17 +2590,7 @@ void Plant::UpdateAbilities()
     else if (mSeedType == SeedType::SEED_SPIKEWEED || mSeedType == SeedType::SEED_SPIKEROCK)    UpdateSpikeweed();
     else if (mSeedType == SeedType::SEED_TANGLEKELP)                                            UpdateTanglekelp();
     else if (mSeedType == SeedType::SEED_SCAREDYSHROOM)                                         UpdateScaredyShroom();
-    {
-         if (updateFuncTryed != 1&&updateFunc == 0)
-         {
-             char*& theName = GetPlantDefinition(mSeedType).mSeedType.theName;
-             string theFinalName = ("Plants." + std::string(theName) + "_Plant." + "Update");
-             updateFunc = (bool(__cdecl*)(Plant*))Functions::gGetCSFunctionByName((char*)theFinalName.c_str());
-             updateFuncTryed = true;
-         }
-     
-         if (updateFunc != 0 && updateFunc(this));
-    }
+
     if (mSubclass == PlantSubClass::SUBCLASS_SHOOTER)
     {
         UpdateShooter();
@@ -2906,8 +2888,6 @@ void Plant::Update()
 
     if (doUpdate)
     {
-
-
         UpdateAbilities();
         Animate();
 
@@ -4538,20 +4518,70 @@ void Plant::CobCannonFire(int theTargetX, int theTargetY)
 //0x466E00
 void Plant::Fire(Zombie* theTargetZombie, int theRow, PlantWeapon thePlantWeapon)
 {
+    if (mSeedType == SeedType::SEED_FUMESHROOM)
+    {
+        DoRowAreaDamage(20, 2U);
+        mApp->PlayFoley(FoleyType::FOLEY_FUME);
+        return;
+    }
+    if (mSeedType == SeedType::SEED_GLOOMSHROOM)
+    {
+        DoRowAreaDamage(20, 2U);
+        return;
+    }
+    if (mSeedType == SeedType::SEED_STARFRUIT)
+    {
+        StarFruitFire();
+        return;
+    }
+
     ProjectileType aProjectileType;
+    switch (mSeedType)
     {
-        char*& theName = GetPlantDefinition(mSeedType).mSeedType.theName;
-        string theFinalName = ("Plants." + std::string(theName) + "_Plant." + "OverrideFire");
-        auto fireFunction = (bool(__cdecl*)(Plant*, Zombie*, int, int))Functions::gGetCSFunctionByName((char*)theFinalName.c_str());
-        if (fireFunction != 0 && fireFunction(this, theTargetZombie, theRow, thePlantWeapon))return;
+    case SeedType::SEED_PEASHOOTER:
+    case SeedType::SEED_REPEATER:
+    case SeedType::SEED_THREEPEATER:
+    case SeedType::SEED_SPLITPEA:
+    case SeedType::SEED_GATLINGPEA:
+    case SeedType::SEED_LEFTPEATER:
+        aProjectileType = ProjectileType::PROJECTILE_PEA;
+        break;
+    case SeedType::SEED_SNOWPEA:
+        aProjectileType = ProjectileType::PROJECTILE_SNOWPEA;
+        break;
+    case SeedType::SEED_PUFFSHROOM:
+    case SeedType::SEED_SCAREDYSHROOM:
+    case SeedType::SEED_SEASHROOM:
+        aProjectileType = ProjectileType::PROJECTILE_PUFF;
+        break;
+    case SeedType::SEED_CACTUS:
+    case SeedType::SEED_CATTAIL:
+        aProjectileType = ProjectileType::PROJECTILE_SPIKE;
+        break;
+    case SeedType::SEED_CABBAGEPULT:
+        aProjectileType = ProjectileType::PROJECTILE_CABBAGE;
+        break;
+    case SeedType::SEED_KERNELPULT:
+        aProjectileType = ProjectileType::PROJECTILE_KERNEL;
+        break;
+    case SeedType::SEED_MELONPULT:
+        aProjectileType = ProjectileType::PROJECTILE_MELON;
+        break;
+    case SeedType::SEED_WINTERMELON:
+        aProjectileType = ProjectileType::PROJECTILE_WINTERMELON;
+        break;
+    case SeedType::SEED_COBCANNON:
+        aProjectileType = ProjectileType::PROJECTILE_COBBIG;
+        break;
+    default:
+        TOD_ASSERT();
+        break;
     }
+    if (mSeedType == SeedType::SEED_KERNELPULT && thePlantWeapon == PlantWeapon::WEAPON_SECONDARY)
     {
-        char*& theName = GetPlantDefinition(mSeedType).mSeedType.theName;
-        string theFinalName = ("Plants." + std::string(theName) + "_Plant." + "GetProjectileForFire");
-        auto func = (ProjectileType(__cdecl*)(Plant*, Zombie*, int, int))Functions::gGetCSFunctionByName((char*)theFinalName.c_str());
-        aProjectileType = func(this, theTargetZombie, theRow, thePlantWeapon);
-        if (aProjectileType == -1)return;
+        aProjectileType = ProjectileType::PROJECTILE_BUTTER;
     }
+
     mApp->PlayFoley(FoleyType::FOLEY_THROW);
     if (mSeedType == SeedType::SEED_SNOWPEA || mSeedType == SeedType::SEED_WINTERMELON)
     {
@@ -4563,25 +4593,12 @@ void Plant::Fire(Zombie* theTargetZombie, int theRow, PlantWeapon thePlantWeapon
     }
 
     int aOriginX, aOriginY;
+    if (mSeedType == SeedType::SEED_PUFFSHROOM)
     {
-        char*& theName = GetPlantDefinition(mSeedType).mSeedType.theName;
-        string theFinalName = ("Plants." + std::string(theName) + "_Plant." + "GetShotProjectileOriginOffset");
-        auto func = (Vector2(__cdecl*)(Plant*, Zombie*, int, int))Functions::gGetCSFunctionByName((char*)theFinalName.c_str());
-        if (func)
-        {
-            Vector2 temp = func(this, theTargetZombie, theRow, thePlantWeapon);
-            aOriginX = temp.x;
-            std::cout << this->mX << " and the got is" << temp.x << " so it is " << (temp.x - mX) << std::endl;
-            aOriginY = temp.y;
-        }
-   
+        aOriginX = mX + 40;
+        aOriginY = mY + 40;
     }
- //   if (mSeedType == SeedType::SEED_PUFFSHROOM)
- //   {
- //       aOriginX = mX + 40;
- //       aOriginY = mY + 40;
- //   }
-     if (mSeedType == SeedType::SEED_SEASHROOM)
+    else if (mSeedType == SeedType::SEED_SEASHROOM)
     {
         aOriginX = mX + 45;
         aOriginY = mY + 63;
@@ -4994,8 +5011,8 @@ void Plant::Die()
 
 PlantDefinition& GetPlantDefinition(SeedType theSeedType)
 {
-    //TOD_ASSERT(gPlantDefs[theSeedType].mSeedType.theValue == theSeedType);
-    //TOD_ASSERT(theSeedType >= 0 && theSeedType < (int)NUM_SEED_TYPES);
+    TOD_ASSERT(gPlantDefs[theSeedType].mSeedType == theSeedType);
+    TOD_ASSERT(theSeedType >= 0 && theSeedType < (int)SeedType::NUM_SEED_TYPES);
     
     return gPlantDefs[theSeedType];
 }

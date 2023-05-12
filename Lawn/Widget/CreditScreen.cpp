@@ -1423,7 +1423,6 @@ void CreditScreen::UpdateMovie()
 //0x437F20
 void CreditScreen::TurnOffTongues(Reanimation* theReanim, int aParentTrack)
 {
-    if (theReanim->mDefinition == nullptr)return;
     for (int aTrackIndex = 0; aTrackIndex < theReanim->mDefinition->mTrackCount; aTrackIndex++)
     {
         ReanimatorTrackInstance* aTrackInstance = &theReanim->mTrackInstances[aTrackIndex];

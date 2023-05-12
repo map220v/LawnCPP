@@ -3,7 +3,7 @@
 
 #include "LawnDialog.h"
 
-#define NUM_ALMANAC_SEEDS NUM_SEEDS_IN_CHOOSER
+#define NUM_ALMANAC_SEEDS 49
 #define NUM_ALMANAC_ZOMBIES 26
 
 constexpr const float			ALMANAC_PLANT_POSITION_X		= 578.0f;

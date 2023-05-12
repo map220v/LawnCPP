@@ -252,7 +252,6 @@ public:
 	virtual void					MouseDrag(int x, int y);
 	virtual void					MouseDown(int x, int y, int theClickCount);
 	virtual void					MouseUp(int x, int y, int theClickCount);
-	virtual void MouseWheel(int theDelta);
 	virtual void					KeyChar(SexyChar theChar);
 	virtual void					KeyUp(KeyCode theKey) { ; }
 	virtual void					KeyDown(KeyCode theKey);

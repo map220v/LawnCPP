@@ -2219,7 +2219,7 @@ void Board::GetPlantsOnLawn(int theGridX, int theGridY, PlantsOnLawn* thePlantOn
 		}
 		else if (aSeedType == SeedType::SEED_FLOWERPOT || (aSeedType == SeedType::SEED_LILYPAD && mApp->mGameMode != GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN))
 		{
-		//	TOD_ASSERT(!thePlantOnLawn->mUnderPlant);
+			TOD_ASSERT(!thePlantOnLawn->mUnderPlant);
 			thePlantOnLawn->mUnderPlant = aPlant;
 		}
 		else if (aSeedType == SeedType::SEED_PUMPKINSHELL)
@@ -2229,7 +2229,7 @@ void Board::GetPlantsOnLawn(int theGridX, int theGridY, PlantsOnLawn* thePlantOn
 		}
 		else
 		{
-	//		TOD_ASSERT(!thePlantOnLawn->mNormalPlant);
+			TOD_ASSERT(!thePlantOnLawn->mNormalPlant);
 			thePlantOnLawn->mNormalPlant = aPlant;
 		}
 	}
@@ -7875,11 +7875,6 @@ static void TodCrash()
 {
 	TOD_ASSERT(false, "Crash%s", "!!!!");
 }
-
-void			Board::MouseWheel(int theDelta) {
-	mApp->mSeedChooserScreen->MouseWheel(theDelta);
-}
-
 
 //0x41B950£¨Ô­°æÖÐ·ÏÆú£©
 void Board::KeyChar(SexyChar theChar)

@@ -141,12 +141,7 @@ class TodParticleSystem;
 
 class Plant : public GameObject
 {
-
-    bool(__cdecl* updateFunc)(Plant*);
-    bool updateFuncTryed;
 public:
-
-
     SeedType                mSeedType;                      //+0x24
     int                     mPlantCol;                      //+0x28
     int                     mAnimCounter;                   //+0x2C
@@ -302,6 +297,20 @@ public:
 
 float                       PlantDrawHeightOffset(Board* theBoard, Plant* thePlant, SeedType theSeedType, int theCol, int theRow);
 float                       PlantFlowerPotHeightOffset(SeedType theSeedType, float theFlowerPotScale);
-#include "../CSBridges.h"
+
+class PlantDefinition
+{
+public:
+    SeedType                mSeedType;          //+0x0
+    Image**                 mPlantImage;        //+0x4
+    ReanimationType         mReanimationType;   //+0x8
+    int                     mPacketIndex;       //+0xC
+    int                     mSeedCost;          //+0x10
+    int                     mRefreshTime;       //+0x14
+    PlantSubClass           mSubClass;          //+0x18
+    int                     mLaunchRate;        //+0x1C
+    const SexyChar*         mPlantName;         //+0x20
+};
+extern PlantDefinition gPlantDefs[SeedType::NUM_SEED_TYPES];
 
 /*inline*/ PlantDefinition& GetPlantDefinition(SeedType theSeedType);

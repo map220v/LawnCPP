@@ -343,7 +343,7 @@ void CutScene::PreloadResources()
 		}
 	}
 
-	for (SeedType aSeedType = SeedType::SEED_PEASHOOTER; aSeedType <NUM_SEED_TYPES; aSeedType = (SeedType)((int)aSeedType + 1))
+	for (SeedType aSeedType = SeedType::SEED_PEASHOOTER; aSeedType < SeedType::NUM_SEED_TYPES; aSeedType = (SeedType)((int)aSeedType + 1))
 	{
 		if (mApp->SeedTypeAvailable(aSeedType))
 		{

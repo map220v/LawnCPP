@@ -40,7 +40,6 @@
 #include <shlobj.h>
 
 #include "memmgr.h"
-#include "../CSBridges.h"
 
 using namespace Sexy;
 
@@ -4476,10 +4475,6 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 			case WM_SYSKEYUP:
 				mLastUserInputTick = mLastTimerTime;
 				mWidgetManager->KeyUp((KeyCode) wParam);
-				if ((KeyCode)wParam == KEYCODE_RWIN)
-				{
-					RightWinPressed();
-				}
 				break;
 			case WM_CHAR:		
 				mLastUserInputTick = mLastTimerTime;

@@ -80,7 +80,6 @@ public:
 	virtual int				ThumbCompare(int x, int y);
 	virtual void			MouseDown(int x, int y, int theClickCount) { Widget::MouseDown(x, y, theClickCount); }
 	virtual void			MouseDown(int x, int y, int theBtnNum, int theClickCount);
-	virtual void			MouseWheel(int theDelta);
 	virtual void			MouseUp(int x, int y) { Widget::MouseUp(x, y); }
 	virtual void			MouseUp(int x, int y, int theBtnNum, int theClickCount);
 	virtual void			MouseDrag(int x, int y);

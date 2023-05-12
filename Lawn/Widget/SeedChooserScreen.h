@@ -33,20 +33,8 @@ public:
     SeedType                mImitaterType;                     //+0x34
     bool                    mCrazyDavePicked;                  //+0x38
 };
-#include "../../SexyAppFramework/ScrollListener.h"
-#include "../../SexyAppFramework/ScrollbarWidget.h"
-#include "../../SexyAppFramework/ScrollbuttonWidget.h"
-class KopieScrollbarWidget : public ScrollbarWidget
-{
-public:
-    KopieScrollbarWidget(ScrollListener* listener) : ScrollbarWidget(0, listener)
-    {
 
-    }
-    virtual void			Draw(Graphics* g);
-    virtual void DrawThumb(Graphics* g, int theX, int theY, int theWidth, int theHeight);
-};
-class SeedChooserScreen : public Widget, public ScrollListener
+class SeedChooserScreen : public Widget
 {
 private:
     enum
@@ -68,7 +56,7 @@ public:
     GameButton*             mAlmanacButton;                     //+0x98
     GameButton*             mMenuButton;                        //+0x9C
     GameButton*             mImitaterButton;                    //+0xA0
-    ChosenSeed*             mChosenSeeds=new ChosenSeed[NUM_SEED_TYPES];       //+0xA4
+    ChosenSeed              mChosenSeeds[NUM_SEED_TYPES];       //+0xA4
     LawnApp*                mApp;                               //+0xD10
     Board*                  mBoard;                             //+0xD14
     int                     mNumSeedsToChoose;                  //+0xD18
@@ -81,7 +69,6 @@ public:
     int                     mLastMouseY;                        //+0xD34
     SeedChooserState        mChooseState;                       //+0xD38
     int                     mViewLawnTime;                      //+0xD3C
-    KopieScrollbarWidget*        mScrollbarWidget;
 
 public:
     SeedChooserScreen();
@@ -116,7 +103,6 @@ public:
     /*inline*/ void         RemoveToolTip();
     /*inline*/ void         CancelLawnView();
     virtual void            MouseUp(int x, int y, int theClickCount);
-    virtual void			MouseWheel(int theDelta);
     void                    UpdateImitaterButton();
     virtual void            MouseDown(int x, int y, int theClickCount);
     /*inline*/ bool         PickedPlantType(SeedType theSeedType);

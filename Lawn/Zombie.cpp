@@ -8127,7 +8127,7 @@ bool Zombie::EffectedByDamage(unsigned int theDamageRangeFlags)
 
 void Zombie::SetRow(int theRow)
 {
-  //  TOD_ASSERT(theRow >= 0 && theRow <= MAX_GRID_SIZE_Y);
+    TOD_ASSERT(theRow >= 0 && theRow <= MAX_GRID_SIZE_Y);
 
     mRow = theRow;
     mRenderOrder = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_ZOMBIE, mRow, 4);

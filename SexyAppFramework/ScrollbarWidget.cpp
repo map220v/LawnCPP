@@ -2,7 +2,6 @@
 #include "WidgetManager.h"
 #include "ScrollListener.h"
 #include "ScrollbuttonWidget.h"
-#include <iostream>
 
 using namespace Sexy;
 
@@ -60,7 +59,7 @@ void ScrollbarWidget::SetHorizontal(bool isHorizontal)
 
 void ScrollbarWidget::ResizeScrollbar(int theX, int theY, int theWidth, int theHeight) 
 {
-	Resize(theX, theY, theWidth+29, theHeight);
+	Resize(theX, theY, theWidth, theHeight);
 	if (mHorizontal)
 	{
 		theX = theY = 0; // Use New Container Stuff
@@ -130,7 +129,7 @@ void ScrollbarWidget::DrawThumb(Graphics *g, int theX, int theY, int theWidth, i
 int ScrollbarWidget::GetTrackSize() 
 {
 	if (mHorizontal)
-		return (mWidth-29) - 2 * mUpButton->mWidth;
+		return mWidth-2*mUpButton->mWidth;
 	else
 		return mHeight-2*mUpButton->mWidth;
 }
@@ -163,15 +162,14 @@ void ScrollbarWidget::Draw(Graphics *g)
 			g->SetColor(Color(232, 232, 232));				
 		g->FillRect(0, 0, aThumbPosition, mHeight);
 			
-
+		if (aThumbSize > 0)	
+			DrawThumb(g, aThumbPosition, 0, aThumbSize, mHeight);
 			
 		if (mUpdateMode == UPDATE_MODE_PGDN) 
 			g->SetColor(Color(48, 48, 48));
 		else 
 			g->SetColor(Color(232, 232, 232));
-		g->FillRect(aThumbPosition + aThumbSize, 0, (mWidth - 29) - aThumbPosition - aThumbSize, mHeight);
-		if (aThumbSize > 0)
-			DrawThumb(g, aThumbPosition, 0, aThumbSize, mHeight);
+		g->FillRect(aThumbPosition + aThumbSize, 0, mWidth - aThumbPosition - aThumbSize, mHeight);
 	}
 	else
 	{
@@ -179,17 +177,16 @@ void ScrollbarWidget::Draw(Graphics *g)
 			g->SetColor(Color(48, 48, 48));
 		else 
 			g->SetColor(Color(232, 232, 232));				
-		g->FillRect(0, 0, (mWidth - 29), aThumbPosition);
+		g->FillRect(0, 0, mWidth, aThumbPosition);
 			
-	
+		if (aThumbSize > 0)	
+			DrawThumb(g, 0, aThumbPosition, mWidth, aThumbSize);
+			
 		if (mUpdateMode == UPDATE_MODE_PGDN) 
 			g->SetColor(Color(48, 48, 48));
 		else 
 			g->SetColor(Color(232, 232, 232));
-		g->FillRect(0, aThumbPosition + aThumbSize, (mWidth - 29), mHeight - aThumbPosition - aThumbSize);
-		if (aThumbSize > 0)
-			DrawThumb(g, 0, aThumbPosition, (mWidth - 29), aThumbSize);
-
+		g->FillRect(0, aThumbPosition + aThumbSize, mWidth, mHeight - aThumbPosition - aThumbSize);
 	}
 }
 	
@@ -307,32 +304,7 @@ int ScrollbarWidget::ThumbCompare(int x, int y)
 
 	return 0;
 }
-void            ScrollbarWidget::MouseWheel(int theDelta)
-{
-	int dir = 0;
-	if (theDelta > 0)dir = -1;
-	else if (theDelta < 0)dir = 1;
-	std::cout << "The delta is " << theDelta << std::endl;
-	if (!mDisabled)
-	{
-		switch (dir)
-		{
-		case -1:
-			mValue--;
-			ClampValue();
-
-			//mLastMouseY = GetThumbPosition() + GetThumbSize();
-
-			break;
-		case 1:
-			mValue++;
-			ClampValue();
-			//mLastMouseY = GetThumbPosition() - GetThumbSize();
-			break;
-		}
-	}
-
-}
+	
 void ScrollbarWidget::MouseDown(int x, int y, int theBtnNum, int theClickCount)
 {
 	Widget::MouseDown(x, y, theBtnNum, theClickCount);

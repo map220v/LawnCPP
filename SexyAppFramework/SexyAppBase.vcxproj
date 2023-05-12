@@ -97,7 +97,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\CSBridges.cpp" />
     <ClCompile Include="..\Lawn\Board.cpp" />
     <ClCompile Include="..\Lawn\Challenge.cpp" />
     <ClCompile Include="..\Lawn\Coin.cpp" />
@@ -627,7 +626,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\CSBridges.h" />
     <ClInclude Include="..\Lawn\System\DataSync.h" />
     <ClInclude Include="..\Lawn\System\ProfileMgr.h" />
     <ClInclude Include="..\Lawn\System\ReanimationLawn.h" />
