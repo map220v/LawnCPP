@@ -38,6 +38,7 @@ void TodFree(void* theBlock)
 
 void TodAssertFailed(const char* theCondition, const char* theFile, int theLine, const char* theMsg, ...)
 {
+#ifdef _DEBUG
 	char aFormattedMsg[1024];
 	va_list argList;
 	va_start(argList, theMsg);
@@ -92,10 +93,12 @@ void TodAssertFailed(const char* theCondition, const char* theFile, int theLine,
 		gInAssert = false;
 		exit(0);
 	}
+#endif
 }
 
 void TodLog(const char* theFormat, ...)
 {
+#ifdef _DEBUG
 	char aButter[1024];
 	va_list argList;
 	va_start(argList, theFormat);
@@ -116,10 +119,12 @@ void TodLog(const char* theFormat, ...)
 	}
 
 	TodLogString(aButter);
+#endif
 }
 
 void TodLogString(const char* theMsg)
 {
+#ifdef _DEBUG
 	FILE* f = fopen(gLogFileName, "a");
 	if (f == nullptr)
 	{
@@ -132,10 +137,12 @@ void TodLogString(const char* theMsg)
 	}
 
 	fclose(f);
+#endif
 }
 
 void TodTrace(const char* theFormat, ...)
 {
+#ifdef _DEBUG
 	char aButter[1024];
 	va_list argList;
 	va_start(argList, theFormat);
@@ -156,6 +163,7 @@ void TodTrace(const char* theFormat, ...)
 	}
 
 	OutputDebugStringA(aButter);
+#endif
 }
 
 void TodHesitationTrace(...)
@@ -164,6 +172,7 @@ void TodHesitationTrace(...)
 
 void TodTraceAndLog(const char* theFormat, ...)
 {
+#ifdef _DEBUG
 	char aButter[1024];
 	va_list argList;
 	va_start(argList, theFormat);
@@ -185,10 +194,12 @@ void TodTraceAndLog(const char* theFormat, ...)
 
 	OutputDebugStringA(aButter);
 	TodLogString(aButter);
+#endif
 }
 
 void TodTraceWithoutSpamming(const char* theFormat, ...)
 {
+#ifdef _DEBUG
 	static __time64_t gLastTraceTime = 0i64;
 	__time64_t aTime = _time64(nullptr);
 	if (aTime < gLastTraceTime)
@@ -217,6 +228,7 @@ void TodTraceWithoutSpamming(const char* theFormat, ...)
 	}
 
 	OutputDebugStringA(aButter);
+#endif
 }
 
 void TodReportError(LPEXCEPTION_POINTERS exceptioninfo, const char* theMessage)
