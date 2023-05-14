@@ -110,7 +110,7 @@ public:
 	/*inline*/ void				FadeOut(int theFadeOutDuration);
 	void						SetupMusicFileForTune(MusicFile theMusicFile, MusicTune theMusicTune);
 	unsigned long				GetMusicOrder(MusicFile theMusicFile);
-	void						MusicCreditScreenInit();
+	void						MusicLoadCreditsSong();
 	int							GetNumLoadingTasks();
 };
 
