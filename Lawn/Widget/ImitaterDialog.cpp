@@ -123,7 +123,7 @@ void ImitaterDialog::ShowToolTip()
 			}
 			else
 			{
-				mToolTip->SetWarningText(_S("[NOT_RECOMMEND_FOR_LEVEL]"));
+				mToolTip->SetWarningText(_S("[NOT_RECOMMENDED_FOR_LEVEL]"));
 			}
 		}
 		else

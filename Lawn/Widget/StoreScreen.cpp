@@ -566,7 +566,10 @@ void StoreScreen::UpdateMouse()
                 case STORE_ITEM_WHEEL_BARROW:           aMessageIndex = 2024;                           break;
                 case STORE_ITEM_STINKY_THE_SNAIL:       aMessageIndex = 2025;                           break;
                 case STORE_ITEM_PACKET_UPGRADE:
-                    aMessageIndex = mApp->mPlayerInfo->mPurchases[STORE_ITEM_PACKET_UPGRADE] + 2011;    break;
+                    if (mApp->mPlayerInfo->mPurchases[STORE_ITEM_PACKET_UPGRADE] < 4)
+                        aMessageIndex = mApp->mPlayerInfo->mPurchases[STORE_ITEM_PACKET_UPGRADE] + 2011;
+                    else
+                        aMessageIndex = 2014;                                                           break;
                 case STORE_ITEM_POOL_CLEANER:           aMessageIndex = 2026;                           break;
                 case STORE_ITEM_ROOF_CLEANER:           aMessageIndex = 2027;                           break;
                 case STORE_ITEM_RAKE:                   aMessageIndex = 2028;                           break;
@@ -910,7 +913,7 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem)
     mApp->CrazyDaveStopTalking();
     if (!CanAffordItem(theStoreItem))
     {
-        Dialog* aDialog = mApp->DoDialog(DIALOG_NOT_ENOUGH_MONEY, true, _S("[NOT_ENOUGH_MONEY]"), _S("[CANNOT_AFFORD_ITEM]"), _S("[DIALOG_BUTTON_OK]"), BUTTONS_FOOTER);
+        Dialog* aDialog = mApp->DoDialog(DIALOG_NOT_ENOUGH_MONEY, true, _S("Not enough money"/*[NOT_ENOUGH_MONEY]*/), _S("You can't afford this item yet. Earn more coins by killing zombies!"/*[CANNOT_AFFORD_ITEM]*/), _S("[DIALOG_BUTTON_OK]"), BUTTONS_FOOTER);
         mWaitForDialog = true;
         aDialog->WaitForResult(true);
         mWaitForDialog = false;
@@ -920,8 +923,8 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem)
         LawnDialog* aComfirmDialog = (LawnDialog*)mApp->DoDialog(
             DIALOG_STORE_PURCHASE, 
             true, 
-            _S("Purshase?"), 
-            _S("Confirm purshasing."), 
+            _S("Buy this item?"), 
+            _S("Are you sure you want to buy this item?"), 
             _S(""), 
             BUTTONS_YES_NO
         );
@@ -938,8 +941,8 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem)
             if (theStoreItem == STORE_ITEM_PACKET_UPGRADE)
             {
                 ++mApp->mPlayerInfo->mPurchases[theStoreItem];
-                SexyString aDialogLines = StrFormat(_S("Now you have slots:"), 6 + mApp->mPlayerInfo->mPurchases[theStoreItem]);
-                Dialog* aDialog = mApp->DoDialog(DIALOG_UPGRADED, true, _S("[MORE_SLOTS]"), aDialogLines, _S("[DIALOG_BUTTON_OK]"), BUTTONS_FOOTER);
+                SexyString aDialogLines = StrFormat(_S("Now you can choose to take %d seeds with you per level!"), 6 + mApp->mPlayerInfo->mPurchases[theStoreItem]);
+                Dialog* aDialog = mApp->DoDialog(DIALOG_UPGRADED, true, _S("More slots!"/*[MORE_SLOTS]*/), aDialogLines, _S("[DIALOG_BUTTON_OK]"), BUTTONS_FOOTER);
 
                 mWaitForDialog = true;
                 aDialog->WaitForResult(true);

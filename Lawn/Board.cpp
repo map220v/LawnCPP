@@ -3564,7 +3564,7 @@ void Board::UpdateToolTip()
 	}
 	else
 	{
-		mToolTip->SetLabel(GetPlantDefinition(aUseSeedType).mPlantName);
+		mToolTip->SetLabel(StrFormat(_S("[%s]"),GetPlantDefinition(aUseSeedType).mPlantName));
 	}
 
 	int aPlantCost = GetCurrentPlantCost(aSeedPacket->mPacketType, aSeedPacket->mImitaterType);
@@ -6699,7 +6699,7 @@ void Board::DrawProgressMeter(Graphics* g)
 	else if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_SLOT_MACHINE)
 	{
 		int aSunMoney = ClampInt(mSunMoney, 0, 2000);
-		SexyString aMatchStr = StrFormat(_S("%d / %d %s"), aSunMoney, 2000, TodStringTranslate(_S("[PROGRESS_METER_SUN_SLOT_MACHINE]")).c_str());
+		SexyString aMatchStr = StrFormat(_S("%d / %d %s"), aSunMoney, 2000, TodStringTranslate(_S("[SUN]")).c_str());
 		TodDrawString(g, aMatchStr, aPosX, 589, Sexy::FONT_DWARVENTODCRAFT12, aColor, DrawStringJustification::DS_ALIGN_CENTER);
 	}
 	else if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM)
@@ -6710,7 +6710,7 @@ void Board::DrawProgressMeter(Graphics* g)
 	}
 	else if (mApp->IsIZombieLevel())
 	{
-		SexyString aMatchStr = StrFormat(_S("%d / %d %s"), mChallenge->mChallengeScore, 5, TodStringTranslate(_S("[PROGRESS_METER_BRAINS]")).c_str());
+		SexyString aMatchStr = StrFormat(_S("%d / %d %s"), mChallenge->mChallengeScore, 5, TodStringTranslate(_S("[BRAINS]")).c_str());
 		TodDrawString(g, aMatchStr, aPosX, 589, Sexy::FONT_DWARVENTODCRAFT12, aColor, DrawStringJustification::DS_ALIGN_CENTER);
 	}
 	else if (ProgressMeterHasFlags())

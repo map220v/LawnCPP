@@ -38,7 +38,7 @@ SeedChooserScreen::SeedChooserScreen()
 	mToolTipSeed = -1;
 
 	mStartButton = new GameButton(SeedChooserScreen::SeedChooserScreen_Start);
-	mStartButton->SetLabel(_S("[PLAY_BUTTON]"));
+	mStartButton->SetLabel(_S("[LETS_ROCK_BUTTON]"));
 	mStartButton->mButtonImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON;
 	mStartButton->mOverImage = nullptr;
 	mStartButton->mDownImage = nullptr;
@@ -343,7 +343,7 @@ void SeedChooserScreen::Draw(Graphics* g)
 	{
 		g->DrawImage(Sexy::IMAGE_SEEDCHOOSER_IMITATERADDON, 459, 503);
 	}
-	TodDrawString(g, _S("[CHOOSE_YOUR_SEEDS]"), 229, 110, Sexy::FONT_DWARVENTODCRAFT18YELLOW, Color::White, DS_ALIGN_CENTER);
+	TodDrawString(g, _S("[CHOOSE_YOUR_PLANTS]"), 229, 110, Sexy::FONT_DWARVENTODCRAFT18YELLOW, Color::White, DS_ALIGN_CENTER);
 
 	int aNumSeeds = Has7Rows() ? 48 : 40;
 	for (SeedType aSeedShadow = SEED_PEASHOOTER; aSeedShadow < aNumSeeds; aSeedShadow = (SeedType)(aSeedShadow + 1))
@@ -910,7 +910,7 @@ void SeedChooserScreen::ShowToolTip()
 					}
 					else
 					{
-						mToolTip->SetWarningText(_S("[NOT_RECOMMEND_FOR_LEVEL]"));
+						mToolTip->SetWarningText(_S("[NOT_RECOMMENDED_FOR_LEVEL]"));
 					}
 				}
 				else

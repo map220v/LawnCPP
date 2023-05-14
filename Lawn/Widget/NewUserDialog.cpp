@@ -8,8 +8,8 @@ NewUserDialog::NewUserDialog(LawnApp* theApp, bool isRename) : LawnDialog(
 	theApp, 
 	isRename ? Dialogs::DIALOG_RENAMEUSER : Dialogs::DIALOG_CREATEUSER, 
 	true, 
-	isRename ? _S("[RENAME_USER]") : _S("[NEW_USER]"), 
-	_S("[PLEASE_ENTER_NAME]"), 
+	isRename ? _S("RENAME USER"/*[RENAME_USER]*/) : _S("NEW USER"/*[NEW_USER]*/),
+	_S("Please enter your name:"/*[PLEASE_ENTER_NAME]*/),
 	_S("[DIALOG_BUTTON_OK]"), 
 	Dialog::BUTTONS_OK_CANCEL)
 {
