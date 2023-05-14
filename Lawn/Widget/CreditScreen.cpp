@@ -346,7 +346,7 @@ CreditScreen::CreditScreen(LawnApp* theApp)
 	}
 }
 
-//0x433E20¡¢0x433E40
+//0x433E20ã€0x433E40
 CreditScreen::~CreditScreen()
 {
 	mApp->SetMusicVolume(mOriginalMusicVolume);
@@ -669,20 +669,20 @@ void CreditScreen::DrawFogEffect(Graphics* g, float theTime)
     {
         for (int y = 0; y < 7; y++)
         {
-            // È¡µÃ¸ñ×ÓÄÚµÄÎíµÄĞÎ×´
+            // å–å¾—æ ¼å­å†…çš„é›¾çš„å½¢çŠ¶
             int aCelLook = x + (x + 17) * y;
             int aCelCol = aCelLook % 8;
-            // ±¾¸ñÅ¨Îíºá×ø±ê = ÁĞ * 80 + Å¨ÎíÆ«ÒÆ - 15
+            // æœ¬æ ¼æµ“é›¾æ¨ªåæ ‡ = åˆ— * 80 + æµ“é›¾åç§» - 15
             float aPosX = x * 80 - 15.0f;
-            // ±¾¸ñÅ¨Îí×İ×ø±ê = ĞĞ * 85 + 200
+            // æœ¬æ ¼æµ“é›¾çºµåæ ‡ = è¡Œ * 85 + 200
             float aPosY = y * 85 + 200.0f;
-            // ¿ªÊ¼¼ÆËãÖÜÆÚ±ä»¯µÄÑÕÉ«£¬aAnimTime Îª MV ¶¯»­²¥·ÅÖÁµ±Ç°Ê±¿ÌĞèÒªµÄÊ±¼ä£¨ÃëÊı£©
+            // å¼€å§‹è®¡ç®—å‘¨æœŸå˜åŒ–çš„é¢œè‰²ï¼ŒaAnimTime ä¸º MV åŠ¨ç”»æ’­æ”¾è‡³å½“å‰æ—¶åˆ»éœ€è¦çš„æ—¶é—´ï¼ˆç§’æ•°ï¼‰
             float aAnimTime = aCreditsReanim->mDefinition->mTracks->mTransformCount * aCreditsReanim->mAnimTime / (aCreditsReanim->mAnimRate * SECONDS_PER_UPDATE);
             float aTime = aAnimTime * PI * 2;
-            // ÓëĞĞ¡¢ÁĞÓĞ¹ØµÄ³õÊ¼ÏàÎ»
+            // ä¸è¡Œã€åˆ—æœ‰å…³çš„åˆå§‹ç›¸ä½
             float aPhaseX = 6 * PI * x / 14;
             float aPhaseY = 6 * PI * y / 7;
-            // ¸ù¾İ³õÏàºÍÊ±¼ä¼ÆËãµ±Ç°ÏàÎ»
+            // æ ¹æ®åˆç›¸å’Œæ—¶é—´è®¡ç®—å½“å‰ç›¸ä½
             float aMotion = 13 + 4 * sin(aTime / 900 + aPhaseY) + 8 * sin(aTime / 500 + aPhaseX);
 
             int aColorVariant = 255 - (aCelLook % 20) * 1.5f - aMotion * 1.5f;

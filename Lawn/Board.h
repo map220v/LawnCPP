@@ -229,7 +229,7 @@ public:
 	void							ClearCursor();
 	/*inline*/ bool					AreEnemyZombiesOnScreen();
 	LawnMower*						FindLawnMowerInRow(int theRow);
-	inline bool						SyncState(DataSync& theDataSync) { /* Î´·¢ÏÖ */return true; }
+	inline bool						SyncState(DataSync& theDataSync) { /* æœªå‘ç° */return true; }
 	/*inline*/ void					SaveGame(const std::string& theFileName);
 	bool							LoadGame(const std::string& theFileName);
 	void							InitLevel();
@@ -266,7 +266,7 @@ public:
 	bool							TakeSunMoney(int theAmount);
 	/*inline*/ bool					CanTakeSunMoney(int theAmount);
 	/*inline*/ void					Pause(bool thePause);
-	inline bool						MakeEasyZombieType() { /* Î´·¢ÏÖ */return false; }
+	inline bool						MakeEasyZombieType() { /* æœªå‘ç° */return false; }
 	void							TryToSaveGame();
 	/*inline*/ bool					NeedSaveGame();
 	/*inline*/ bool					RowCanHaveZombies(int theRow);
@@ -288,7 +288,7 @@ public:
 	bool							MouseHitTest(int x, int y, HitResult* theHitResult);
 	void							MouseDownWithPlant(int x, int y, int theClickCount);
 	void							MouseDownWithTool(int x, int y, int theClickCount, CursorType theCursorType);
-	inline void						MouseDownNormal(int x, int y, int theClickCount) { /* Î´·¢ÏÖ */; }
+	inline void						MouseDownNormal(int x, int y, int theClickCount) { /* æœªå‘ç° */; }
 	bool							CanInteractWithBoardButtons();
 	void							DrawProgressMeter(Graphics* g);
 	void							UpdateToolTip();

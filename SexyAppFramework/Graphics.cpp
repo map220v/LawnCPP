@@ -1180,12 +1180,12 @@ static int WriteWordWrappedHelper(Graphics *g, const SexyString& theString, int 
 int	Graphics::WriteWordWrapped(const Rect& theRect, const SexyString& theLine, int theLineSpacing, int theJustification, int *theMaxWidth, int theMaxChars, int *theLastWidth)
 {
 	/*
-	ÕýÊ½°æÖÐ£¬É¾È¥ÁË *theLastWidth¡¢theMaxChars ºÍ *theMaxWidth ²ÎÊý£¬´Ëº¯ÊýÐÎÊ½¿ÉÒÔ¼ò»¯Îª£º
-	Graphics::×Ô¶¯»»ÐÐµÄÎÄ×Ö»æÖÆ(const Rect& »æÖÆÇøÓò¾ØÐÎ, const SexyString& ÎÄ×ÖÄÚÈÝ, int ÐÐ¾à = -1, int ¶ÔÆë·½Ê½ = -1)
-	µ±ÐÐ¾à = -1 Ê±£¬Ä¬ÈÏÊ¹ÓÃ Graphics ×ÖÌåµÄÐÐ¾à£»¶ÔÆë·½Ê½£º×ó¶ÔÆë = -1£»¾ÓÖÐ¶ÔÆë = 0£»ÓÒ¶ÔÆë = 1¡£
+	æ­£å¼ç‰ˆä¸­ï¼Œåˆ åŽ»äº† *theLastWidthã€theMaxChars å’Œ *theMaxWidth å‚æ•°ï¼Œæ­¤å‡½æ•°å½¢å¼å¯ä»¥ç®€åŒ–ä¸ºï¼š
+	Graphics::è‡ªåŠ¨æ¢è¡Œçš„æ–‡å­—ç»˜åˆ¶(const Rect& ç»˜åˆ¶åŒºåŸŸçŸ©å½¢, const SexyString& æ–‡å­—å†…å®¹, int è¡Œè· = -1, int å¯¹é½æ–¹å¼ = -1)
+	å½“è¡Œè· = -1 æ—¶ï¼Œé»˜è®¤ä½¿ç”¨ Graphics å­—ä½“çš„è¡Œè·ï¼›å¯¹é½æ–¹å¼ï¼šå·¦å¯¹é½ = -1ï¼›å±…ä¸­å¯¹é½ = 0ï¼›å³å¯¹é½ = 1ã€‚
 	*/
 	Color anOrigColor = GetColor();
-	int anOrigColorInt = anOrigColor.ToInt();  //ÑÕÉ«Êý×é×ª»¯Îª ARGB ÑÕÉ«
+	int anOrigColorInt = anOrigColor.ToInt();  //é¢œè‰²æ•°ç»„è½¬åŒ–ä¸º ARGB é¢œè‰²
 	if ((anOrigColorInt&0xFF000000)==0xFF000000)
 		anOrigColorInt &= ~0xFF000000;
 	
@@ -1194,7 +1194,7 @@ int	Graphics::WriteWordWrapped(const Rect& theRect, const SexyString& theLine, i
 
 	Font* aFont = GetFont();						
 
-	//×ÝÏòÆ«ÒÆÖµ = ×ÖÌåÖ÷Òª²¿·Ö¸ß¶È - ×ÖÌåÄÚ±ß¾à
+	//çºµå‘åç§»å€¼ = å­—ä½“ä¸»è¦éƒ¨åˆ†é«˜åº¦ - å­—ä½“å†…è¾¹è·
 	int aYOffset = aFont->GetAscent() - aFont->GetAscentPadding();
 
 	if (theLineSpacing == -1)
@@ -1336,7 +1336,7 @@ int	Graphics::WriteWordWrapped(const Rect& theRect, const SexyString& theLine, i
 	if (theMaxWidth!=NULL)
 		*theMaxWidth = aMaxWidth;
 
-	//·µ»ØÊ±£¬aYOffset ÔöÁ¿Îª (ÐÐÊý + 1) * ÐÐ¾à¡£ÒÔ aYOffset ¼õÈ¥Ä©ÐÐ¶àËãµÄÒ»´ÎÐÐ¾à£¬ÔÙ¼ÓÉÏ×ÖÌåÏÂ³Á²¿·ÖµÄ¸ß¶È£¬µÃµ½ÎÄ±¾µ×²¿µÄ×ÝÏòÆ«ÒÆÖµ£¬¼´ÎÄ±¾ÇøÓò¸ß¶È¡£
+	//è¿”å›žæ—¶ï¼ŒaYOffset å¢žé‡ä¸º (è¡Œæ•° + 1) * è¡Œè·ã€‚ä»¥ aYOffset å‡åŽ»æœ«è¡Œå¤šç®—çš„ä¸€æ¬¡è¡Œè·ï¼Œå†åŠ ä¸Šå­—ä½“ä¸‹æ²‰éƒ¨åˆ†çš„é«˜åº¦ï¼Œå¾—åˆ°æ–‡æœ¬åº•éƒ¨çš„çºµå‘åç§»å€¼ï¼Œå³æ–‡æœ¬åŒºåŸŸé«˜åº¦ã€‚
 	return aYOffset + aFont->GetDescent() - theLineSpacing;
 }
 
@@ -1347,7 +1347,7 @@ int	Graphics::DrawStringColor(const SexyString& theLine, int theX, int theY, int
 
 int	Graphics::DrawStringWordWrapped(const SexyString& theLine, int theX, int theY, int theWrapWidth, int theLineSpacing, int theJustification, int *theMaxWidth)
 {
-	/*Õâ¸öº¯ÊýÔÚÕýÊ½°æÖÐ±»É¾µÃÖ»Ê£Ç°Èý¸ö²ÎÊýÁË¡­¡­*/
+	/*è¿™ä¸ªå‡½æ•°åœ¨æ­£å¼ç‰ˆä¸­è¢«åˆ å¾—åªå‰©å‰ä¸‰ä¸ªå‚æ•°äº†â€¦â€¦*/
 	int aYOffset = mFont->GetAscent() - mFont->GetAscentPadding();
 
 	Rect aRect(theX,theY-aYOffset,theWrapWidth,0);

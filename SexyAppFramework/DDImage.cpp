@@ -3174,22 +3174,22 @@ void DDImage::FillScanLinesWithCoverage(Span* theSpans, int theSpanCount, const 
 	{ // ugh!#@$
 		int l = theSpans[0].mX, t = theSpans[0].mY;
 		int r = l + theSpans[0].mWidth, b = t;
-		for (int i = 1; i < theSpanCount; ++i)  //´ËÑ­»·½áÊøºó£¬Rect(l, t, r - l + 1, b - t + 1) ¼´Îª°üº¬ËùÓÐ Span µÄ×îÐ¡¾ØÐÎÇøÓò
+		for (int i = 1; i < theSpanCount; ++i)  //æ­¤å¾ªçŽ¯ç»“æŸåŽï¼ŒRect(l, t, r - l + 1, b - t + 1) å³ä¸ºåŒ…å«æ‰€æœ‰ Span çš„æœ€å°çŸ©å½¢åŒºåŸŸ
 		{
 			l = min(theSpans[i].mX, l);
 			r = max(theSpans[i].mX + theSpans[i].mWidth - 1, r);
 			t = min(theSpans[i].mY, t);
 			b = max(theSpans[i].mY, b);
 		}
-		for (int i = 0; i < theSpanCount; ++i)  //´ËÑ­»·½«ËùÓÐ Span µÄ¾ø¶Ô×ø±ê¸ü¸ÄÎªÔÚÉÏÊö¾ØÐÎÇøÓòÄÚµÄÏà¶Ô×ø±ê
+		for (int i = 0; i < theSpanCount; ++i)  //æ­¤å¾ªçŽ¯å°†æ‰€æœ‰ Span çš„ç»å¯¹åæ ‡æ›´æ”¹ä¸ºåœ¨ä¸Šè¿°çŸ©å½¢åŒºåŸŸå†…çš„ç›¸å¯¹åæ ‡
 		{
 			theSpans[i].mX -= l;
 			theSpans[i].mY -= t;
 		}
 
 		MemoryImage aTempImage;
-		aTempImage.Create(r-l+1, b-t+1);  //´´½¨Ò»¸öÓë×îÐ¡¾ØÐÎÇøÓòÏàÍ¬´óÐ¡µÄ MemoryImage
-		//theCoverX - l ºÍ theCoverY - t ·Ö±ð½«¾ø¶Ô×ø±ê×ª»¯Îª MemoryImage ÉÏµÄÏà¶Ô×ø±ê
+		aTempImage.Create(r-l+1, b-t+1);  //åˆ›å»ºä¸€ä¸ªä¸Žæœ€å°çŸ©å½¢åŒºåŸŸç›¸åŒå¤§å°çš„ MemoryImage
+		//theCoverX - l å’Œ theCoverY - t åˆ†åˆ«å°†ç»å¯¹åæ ‡è½¬åŒ–ä¸º MemoryImage ä¸Šçš„ç›¸å¯¹åæ ‡
 		aTempImage.FillScanLinesWithCoverage(theSpans, theSpanCount, theColor, theDrawMode, theCoverage, theCoverX - l, theCoverY - t, theCoverWidth, theCoverHeight);
 		Blt(&aTempImage, l, t, Rect(0, 0, r-l+1, b-t+1), Color::White, theDrawMode);
 		return;

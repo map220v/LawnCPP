@@ -27,7 +27,7 @@ SeedChooserScreen::SeedChooserScreen()
 	mApp = (LawnApp*)gSexyAppBase;
 	mBoard = mApp->mBoard;
 	mClip = false;
-	// mSeedChooserAge = 0;  原版并没有初始化 mSeedChooserAge
+	// mSeedChooserAge = 0;  鍘熺増骞舵病鏈夊垵濮嬪寲 mSeedChooserAge
 	mSeedsInFlight = 0;
 	mSeedsInBank = 0;
 	mLastMouseX = -1;

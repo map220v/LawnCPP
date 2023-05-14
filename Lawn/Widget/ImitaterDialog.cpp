@@ -111,11 +111,11 @@ void ImitaterDialog::ShowToolTip()
 	{
 		RemoveToolTip();
 		uint aRecFlags = mApp->mSeedChooserScreen->SeedNotRecommendedToPick(aSeedType);
-		if (mApp->mSeedChooserScreen->SeedNotAllowedToPick(aSeedType))  // Èç¹û²»ÄÜĞ¯´ø
+		if (mApp->mSeedChooserScreen->SeedNotAllowedToPick(aSeedType))  // å¦‚æœä¸èƒ½æºå¸¦
 		{
 			mToolTip->SetWarningText(_S("[NOT_ALLOWED_ON_THIS_LEVEL]"));
 		}
-		else if (aRecFlags)  // Èç¹û²»ÍÆ¼öĞ¯´ø
+		else if (aRecFlags)  // å¦‚æœä¸æ¨èæºå¸¦
 		{
 			if (TestBit(aRecFlags, NotRecommend::NOT_RECOMMENDED_NOCTURNAL))
 			{

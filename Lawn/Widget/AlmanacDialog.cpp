@@ -545,37 +545,37 @@ SeedType AlmanacDialog::SeedHitTest(int x, int y)
 
 bool AlmanacDialog::ZombieHasSilhouette(ZombieType theZombieType)
 {
-	// ��ѩ�˽�ʬ�����������ʬ������ѩ�˽�ʬ�Ѿ�����ˢ�����Ѿ���������ð��ģʽ����Ŀ 4-10 �ؿ������򲻻���ʾΪ��Ӱ
+	// 除雪人僵尸以外的其他僵尸，或者雪人僵尸已经可以刷出（已经到达或完成冒险模式二周目 4-10 关卡），则不会显示为剪影
 	if (theZombieType != ZombieType::ZOMBIE_YETI || mApp->CanSpawnYetis())
 		return false;
 
-	// �ų�����������������ѩ�˽�ʬ���ֵĹؿ���ð��ģʽһ��Ŀ 4-10 �ؿ�������ѩ�˽�ʬ��ʾΪ��Ӱ
+	// 排除上述情况后，若已完成雪人僵尸出现的关卡（冒险模式一周目 4-10 关卡），则雪人僵尸显示为剪影
 	return mApp->HasFinishedAdventure() || mApp->mPlayerInfo->GetLevel() > GetZombieDefinition(ZombieType::ZOMBIE_YETI).mStartingLevel;
 }
 
 //0x403A10
 bool AlmanacDialog::ZombieIsShown(ZombieType theZombieType)
 {
-	// ����ģʽ�£���չʾǱˮ��ʬ����֮ǰ���ֵĽ�ʬ
+	// 试玩模式下，仅展示潜水僵尸及其之前出现的僵尸
 	if (mApp->IsTrialStageLocked() && theZombieType > ZombieType::ZOMBIE_SNORKEL)
 		return false;
 
-	// ����ѩ�˽�ʬ��Ҫ���������ˢ���г��֣��Ѿ���������ð��ģʽ����Ŀ 4-10 �ؿ�����
-	// ���ѵ�֪����ڵ�δ�����������Ѿ����ð��ģʽһ��Ŀ 4-10 �ؿ�����δ�������Ŀ 4-10 �ؿ���
+	// 对于雪人僵尸，要求其可以在刷怪中出现（已经到达或完成冒险模式二周目 4-10 关卡），
+	// 或已得知其存在但未解锁其形象（已经完成冒险模式一周目 4-10 关卡，但未到达二周目 4-10 关卡）
 	if (theZombieType == ZombieType::ZOMBIE_YETI)
 		return mApp->CanSpawnYetis() || ZombieHasSilhouette(ZombieType::ZOMBIE_YETI);
 
-	// ����ð��ģʽ�г��ֵĽ�ʬ
+	// 对于冒险模式中出现的僵尸
 	if (theZombieType <= ZombieType::ZOMBIE_BOSS)
 	{
-		// ð��ģʽһ��Ŀ��ɺ�ͼ��չʾ���н�ʬ
+		// 冒险模式一周目完成后，图鉴展示所有僵尸
 		if (mApp->HasFinishedAdventure())
 			return true;
 
 		int aLevel = mApp->mPlayerInfo->GetLevel();
 		int aStart = GetZombieDefinition(theZombieType).mStartingLevel;
-		// Ҫ���Ѿ��ﵽ��ʬ�״γ��ֵĹؿ�
-		// ���ڲ���ͨ����Ȼˢ�ֳ��ֵĽ�ʬ��С����ʬ��ѩ����ʬС�ӡ����轩ʬ��������Ҫ����ͨ�����״γ��ֵĹؿ����ѻ��ܹ��ý�ʬ
+		// 要求已经达到僵尸首次出现的关卡
+		// 对于不能通过自然刷怪出现的僵尸（小鬼僵尸、雪橇僵尸小队、伴舞僵尸），额外要求已通过其首次出现的关卡或已击败过该僵尸
 		return aStart <= aLevel && (aStart != aLevel || !Board::IsZombieTypeSpawnedOnly(theZombieType) || gZombieDefeated[theZombieType]);
 	}
 
@@ -588,22 +588,22 @@ bool AlmanacDialog::ZombieHasDescription(ZombieType theZombieType)
 	int aLevel = mApp->mPlayerInfo->GetLevel();
 	int aStart = GetZombieDefinition(theZombieType).mStartingLevel;
 
-	// ����ѩ�˽�ʬ
+	// 对于雪人僵尸
 	if (theZombieType == ZombieType::ZOMBIE_YETI)
 	{
-		// ��ѩ�˽�ʬ������ˢ���г���ʱ��ð��ģʽ����Ŀ 4-10 �ؿ�֮ǰ��������ʾ��ʬ����
+		// 当雪人僵尸不可在刷怪中出现时（冒险模式二周目 4-10 关卡之前），不显示僵尸描述
 		if (!mApp->CanSpawnYetis())
 			return false;
-		// �ӵ�����Ŀ��ʼ��������ʾѩ�˽�ʬ������
+		// 从第三周目开始，总是显示雪人僵尸的描述
 		if (mApp->mPlayerInfo->mFinishedAdventure >= 2)
 			return true;
 	}
-	// ����ѩ�˽�ʬ���������ʬ����ð��ģʽ�����ʱ��������ʾ��ʬ������
+	// 对于雪人僵尸外的其他僵尸，当冒险模式已完成时，总是显示僵尸的描述
 	else if (mApp->HasFinishedAdventure())
 		return true;
 
-	// ѩ�˽�ʬ�ڶ���Ŀ 4-10 �ؿ�������Ŀ֮�䣬��������ʬ��ð��ģʽһ��Ŀ�е������
-	// Ҫ���Ѿ��ﵽ��ʬ�״γ��ֵĹؿ�������ͨ�����״γ��ֵĹؿ����ѻ��ܹ��ý�ʬ
+	// 雪人僵尸在二周目 4-10 关卡至三周目之间，或其他僵尸在冒险模式一周目中的情况，
+	// 要求已经达到僵尸首次出现的关卡，且已通过其首次出现的关卡或已击败过该僵尸
 	return aStart <= aLevel && (aStart != aLevel || gZombieDefeated[theZombieType]);
 }
 

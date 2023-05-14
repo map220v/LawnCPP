@@ -42,13 +42,13 @@ void TodAllocator::Grow()
 
 bool TodAllocator::IsPointerFromAllocator(void* theItem)
 {
-	size_t aBlockSize = mGrowCount * mItemSize;  // Ã¿´Î¡°Grow¡±µÄÄÚ´æ´óÐ¡£¬¼´Ã¿¸öÇø¿éµÄÄÚ´æ´óÐ¡
+	size_t aBlockSize = mGrowCount * mItemSize;  // æ¯æ¬¡â€œGrowâ€çš„å†…å­˜å¤§å°ï¼Œå³æ¯ä¸ªåŒºå—çš„å†…å­˜å¤§å°
 	for (void* aPtr = mBlockList; aPtr != nullptr; aPtr = *(void**)aPtr)
 	{
 		uint aItemPtr = (uint)theItem;
-		// Çø¿éµÄÊ×¸öËÄ×Ö½ÚÎª¶îÍâÉêÇëµÄ¡¢ÓÃÓÚ´æ´¢Ö¸ÏòÏÂÒ»Çø¿éµÄÖ¸ÕëµÄÇøÓò
+		// åŒºå—çš„é¦–ä¸ªå››å­—èŠ‚ä¸ºé¢å¤–ç”³è¯·çš„ã€ç”¨äºŽå­˜å‚¨æŒ‡å‘ä¸‹ä¸€åŒºå—çš„æŒ‡é’ˆçš„åŒºåŸŸ
 		uint aBlockPtr = (uint)aPtr + sizeof(void*);
-		// ÅÐ¶Ï theItem ÊÇ·ñÎ»ÓÚµ±Ç°Çø¿éÄÚÇÒÖ¸ÏòÄ³Ò»ÏîµÄÇøÓòµÄÆðÊ¼µØÖ·
+		// åˆ¤æ–­ theItem æ˜¯å¦ä½äºŽå½“å‰åŒºå—å†…ä¸”æŒ‡å‘æŸä¸€é¡¹çš„åŒºåŸŸçš„èµ·å§‹åœ°å€
 		if (aItemPtr >= aBlockPtr && aItemPtr < aBlockPtr + aBlockSize && (aItemPtr - aBlockPtr) % mItemSize == 0)
 			return true;
 	}
@@ -86,8 +86,8 @@ void TodAllocator::Free(void* theItem, int theItemSize)
 	mTotalItems--;
 	TOD_ASSERT(IsPointerFromAllocator(theItem));
 	TOD_ASSERT(!IsPointerOnFreeList(theItem));
-	*(void**)theItem = mFreeList;  // ½«Ô­¿ÉÓÃÇøÓòÍ·´æÈë [*theItem] ÖÐ
-	mFreeList = theItem;  // ½« theItem ÉèÎªÐÂµÄ¿ÉÓÃÇøÓòÍ·
+	*(void**)theItem = mFreeList;  // å°†åŽŸå¯ç”¨åŒºåŸŸå¤´å­˜å…¥ [*theItem] ä¸­
+	mFreeList = theItem;  // å°† theItem è®¾ä¸ºæ–°çš„å¯ç”¨åŒºåŸŸå¤´
 }
 
 void TodAllocator::FreeAll()

@@ -1793,11 +1793,11 @@ bool (*gExtractResourcesByName)(Sexy::ResourceManager* theResourceManager, const
 
 void* gResources[(int)Sexy::ResourceId::RESOURCE_ID_MAX] =
 {
-	/* Init£∫0x69E6B0 */
+	/* InitÔºö0x69E6B0 */
 	&Sexy::IMAGE_BLANK,
 	&Sexy::IMAGE_POPCAP_LOGO,
 	&Sexy::IMAGE_PARTNER_LOGO,
-	/* LoaderBar£∫0x69E6BC */
+	/* LoaderBarÔºö0x69E6BC */
 	&Sexy::IMAGE_TITLESCREEN,
 	&Sexy::IMAGE_LOADBAR_DIRT,
 	&Sexy::IMAGE_LOADBAR_GRASS,
@@ -1807,7 +1807,7 @@ void* gResources[(int)Sexy::ResourceId::RESOURCE_ID_MAX] =
 	&Sexy::SOUND_BUTTONCLICK,
 	&Sexy::SOUND_LOADINGBAR_FLOWER,
 	&Sexy::SOUND_LOADINGBAR_ZOMBIE,
-	/* LoadingFonts£∫0x69E6E0 */
+	/* LoadingFontsÔºö0x69E6E0 */
 	&Sexy::FONT_IMAGE_HOUSEOFTERROR28,
 	&Sexy::FONT_HOUSEOFTERROR28,
 	&Sexy::FONT_HOUSEOFTERROR20,
@@ -1826,7 +1826,7 @@ void* gResources[(int)Sexy::ResourceId::RESOURCE_ID_MAX] =
 	&Sexy::FONT_DWARVENTODCRAFT36GREENINSET,
 	&Sexy::FONT_PICO129,
 	&Sexy::FONT_BRIANNETOD12,
-	/* LoadingImages£∫0x69E728 */
+	/* LoadingImagesÔºö0x69E728 */
 	&Sexy::IMAGE_EDITBOX,
 	&Sexy::IMAGE_DIALOG_TOPLEFT,
 	&Sexy::IMAGE_DIALOG_TOPMIDDLE,
@@ -2530,6 +2530,6 @@ Sexy::ResourceId Sexy::GetIdByVariable(void* theVariable)
 	{ 
 		mov edi,[aMap+04]  ; edi = *aMap.end()
 		mov ebx,[anIter]   ; ebx = *anIter
-		cmp ebx,edi        ; this ”Î other µƒ °∞==°±≤Ÿ◊˜£¨±»Ωœ *this ”Î *other  «∑Òœ‡Õ¨
+		cmp ebx,edi        ; this ‰∏é other ÁöÑ ‚Äú==‚ÄùÊìç‰ΩúÔºåÊØîËæÉ *this ‰∏é *other ÊòØÂê¶Áõ∏Âêå
 	}
 */

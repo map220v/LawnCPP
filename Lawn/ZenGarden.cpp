@@ -331,7 +331,7 @@ void ZenGarden::FindOpenZenGardenSpot(int& theSpotX, int& theSpotY)
         {
             if (mApp->mCrazyDaveMessageIndex != -1 && (x < 2 || y < 1))
             {
-                continue;  // ºöÂÔ±»´÷·òÕÚµ²×¡µÄ²¿·Ö
+                continue;  // å¿½ç•¥è¢«æˆ´å¤«é®æŒ¡ä½çš„éƒ¨åˆ†
             }
 
             for (int i = 0; i < mApp->mPlayerInfo->mNumPottedPlants; i++)
@@ -339,7 +339,7 @@ void ZenGarden::FindOpenZenGardenSpot(int& theSpotX, int& theSpotY)
                 PottedPlant* aPottedPlant = PottedPlantFromIndex(i);
                 if (aPottedPlant->mWhichZenGarden == GardenType::GARDEN_MAIN && aPottedPlant->mX == x && aPottedPlant->mY == y)
                 {
-                    continue;  // ¸ñ×ÓÄÚÒÑÓĞÅèÔÔÖ²ÎïÔò²»¿ÉÑ¡Ôñ
+                    continue;  // æ ¼å­å†…å·²æœ‰ç›†æ ½æ¤ç‰©åˆ™ä¸å¯é€‰æ‹©
                 }
             }
 

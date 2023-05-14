@@ -184,10 +184,10 @@ float TodCalcSmoothWeight(float aWeight, float aLastPicked, float aSecondLastPic
 		return 0.0f;
 	}
 
-	float aExpectedLength1 = 1.0f / aWeight;								// theLastPicked µÄÆÚÍûÖµ
-	float aExpectedLength2 = aExpectedLength1 * 2.0f;						// theSecondLastPicked µÄÆÚÍûÖµ
-	float aAdvancedLength1 = aLastPicked + 1.0f - aExpectedLength1;			// Ïà½ÏÓÚ theLastPicked µÄÆÚÍûÖµ£¬ÌáÇ°µÄÂÖÊı
-	float aAdvancedLength2 = aSecondLastPicked + 1.0f - aExpectedLength2;	// Ïà½ÏÓÚ theSecondLastPicked µÄÆÚÍûÖµ£¬ÌáÇ°µÄÂÖÊı
+	float aExpectedLength1 = 1.0f / aWeight;								// theLastPicked çš„æœŸæœ›å€¼
+	float aExpectedLength2 = aExpectedLength1 * 2.0f;						// theSecondLastPicked çš„æœŸæœ›å€¼
+	float aAdvancedLength1 = aLastPicked + 1.0f - aExpectedLength1;			// ç›¸è¾ƒäº theLastPicked çš„æœŸæœ›å€¼ï¼Œæå‰çš„è½®æ•°
+	float aAdvancedLength2 = aSecondLastPicked + 1.0f - aExpectedLength2;	// ç›¸è¾ƒäº theSecondLastPicked çš„æœŸæœ›å€¼ï¼Œæå‰çš„è½®æ•°
 	float aFactor1 = 1.0f + aAdvancedLength1 / aExpectedLength1 * 2.0f;		// = aWeight * aLastPicked * 2 + aWeight * 2 - 1
 	float aFactor2 = 1.0f + aAdvancedLength2 / aExpectedLength2 * 2.0f;		// = aSecondLastPicked * aWeight + aWeight - 1
 	float aFactorFinal = ClampFloat(aFactor1 * 0.75f + aFactor2 * 0.25f, 0.01f, 100.0f);
@@ -706,7 +706,7 @@ void TodSandImageIfNeeded(Image* theImage)
 	{
 		FixPixelsOnAlphaEdgeForBlending(theImage);
 		//((MemoryImage*)theImage)->mD3DFlags &= ~D3DIMAGEFLAG_SANDING;
-		SetBit((unsigned int&)aImage->mD3DFlags, D3DIMAGEFLAG_SANDING, false);  // Çå³ı±ê¼Ç
+		SetBit((unsigned int&)aImage->mD3DFlags, D3DIMAGEFLAG_SANDING, false);  // æ¸…é™¤æ ‡è®°
 	}
 }
 
@@ -874,19 +874,19 @@ unsigned long AverageNearByPixels(MemoryImage* theImage, unsigned long* thePixel
 	int aBlue = 0;
 	int aBitsCount = 0;
 
-	for (int i = -1; i <= 1; i++)  // ÒÀ´ÎÑ­»·ÉÏ·½¡¢µ±Ç°¡¢ÏÂ·½µÄÒ»ĞĞ
+	for (int i = -1; i <= 1; i++)  // ä¾æ¬¡å¾ªç¯ä¸Šæ–¹ã€å½“å‰ã€ä¸‹æ–¹çš„ä¸€è¡Œ
 	{
-		if (i == 0)  // ÅÅ³ıµ±Ç°ĞĞ
+		if (i == 0)  // æ’é™¤å½“å‰è¡Œ
 		{
 			continue;
 		}
 
-		for (int j = -1; j <= 1; j++)  // ÒÀ´ÎÑ­»·×ó·½¡¢µ±Ç°¡¢ÓÒ·½µÄÒ»ÁĞ
+		for (int j = -1; j <= 1; j++)  // ä¾æ¬¡å¾ªç¯å·¦æ–¹ã€å½“å‰ã€å³æ–¹çš„ä¸€åˆ—
 		{
 			if ((x != 0 || j != -1) && (x != theImage->mWidth - 1 || j != 1) && (y != 0 || i != -1) && (y != theImage->mHeight - 1 || i != 1))
 			{
 				unsigned long aPixel = *(thePixel + i * theImage->mWidth + j);
-				if (aPixel & 0xFF000000UL)  // Èç¹û²»ÊÇÍ¸Ã÷ÏñËØ
+				if (aPixel & 0xFF000000UL)  // å¦‚æœä¸æ˜¯é€æ˜åƒç´ 
 				{
 					aRed += (aPixel >> 16) & 0x000000FFUL;
 					aGreen += (aPixel >> 8) & 0x000000FFUL;
@@ -916,7 +916,7 @@ void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
 	if (aImage->mBits == nullptr)
 		return;
 
-	aImage->CommitBits();  // ·ÖÎö mHasTrans ºÍ mHasAlpha
+	aImage->CommitBits();  // åˆ†æ mHasTrans å’Œ mHasAlpha
 	if (!aImage->mHasTrans)
 		return;
 
@@ -928,9 +928,9 @@ void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
 	{
 		for (int x = 0; x < theImage->mWidth; x++)
 		{
-			if ((*aBitsPtr & 0xFF000000UL) == 0)  // Èç¹ûÏñËØµÄ²»Í¸Ã÷¶ÈÎª 0
+			if ((*aBitsPtr & 0xFF000000UL) == 0)  // å¦‚æœåƒç´ çš„ä¸é€æ˜åº¦ä¸º 0
 			{
-				*aBitsPtr = AverageNearByPixels(aImage, aBitsPtr, x, y);  // ¼ÆËã¸ÃµãÖÜÎ§·ÇÍ¸Ã÷ÏñËØµÄÆ½¾ùÑÕÉ«
+				*aBitsPtr = AverageNearByPixels(aImage, aBitsPtr, x, y);  // è®¡ç®—è¯¥ç‚¹å‘¨å›´éé€æ˜åƒç´ çš„å¹³å‡é¢œè‰²
 			}
 
 			aBitsPtr++;
@@ -1035,13 +1035,13 @@ Color ColorAdd(const Color& theColor1, const Color& theColor2)
 	int b = theColor1.mBlue + theColor2.mBlue;
 	int a = theColor1.mAlpha + theColor2.mAlpha;
 
-	return Color(ClampInt(r, 0, 255), ClampInt(g, 0, 255), ClampInt(b, 0, 255), ClampInt(a, 0, 255));  // ÏßĞÔ¼õµ­
+	return Color(ClampInt(r, 0, 255), ClampInt(g, 0, 255), ClampInt(b, 0, 255), ClampInt(a, 0, 255));  // çº¿æ€§å‡æ·¡
 }
 
 //0x513020
 int ColorComponentMultiply(int theColor1, int theColor2)
 {
-	return ClampInt(theColor1 * theColor2 / 255, 0, 255);  // ÕıÆ¬µşµ×
+	return ClampInt(theColor1 * theColor2 / 255, 0, 255);  // æ­£ç‰‡å åº•
 }
 
 //0x513050
@@ -1052,7 +1052,7 @@ Color ColorsMultiply(const Color& theColor1, const Color& theColor2)
 		ColorComponentMultiply(theColor1.mGreen, theColor2.mGreen),
 		ColorComponentMultiply(theColor1.mBlue, theColor2.mBlue),
 		ColorComponentMultiply(theColor1.mAlpha, theColor2.mAlpha)
-	);  // ÕıÆ¬µşµ×
+	);  // æ­£ç‰‡å åº•
 }
 
 //0x513120

@@ -148,7 +148,7 @@ Plant* Projectile::FindCollisionTargetPlant()
 				aPlant->mSeedType == SeedType::SEED_POTATOMINE ||
 				aPlant->mSeedType == SeedType::SEED_SPIKEWEED ||
 				aPlant->mSeedType == SeedType::SEED_SPIKEROCK ||
-				aPlant->mSeedType == SeedType::SEED_LILYPAD)  // ½©Ê¬Íã¶¹²»ÄÜ»÷ÖĞµÍ°«Ö²Îï
+				aPlant->mSeedType == SeedType::SEED_LILYPAD)  // åƒµå°¸è±Œè±†ä¸èƒ½å‡»ä¸­ä½çŸ®æ¤ç‰©
 				continue;
 		}
 
@@ -200,7 +200,7 @@ bool Projectile::PeaAboutToHitTorchwood()
 //0x46CD40
 Zombie* Projectile::FindCollisionTarget()
 {
-	if (PeaAboutToHitTorchwood())  // ¡°¿¨»ğ¾æ¡±µÄÔ­Àí£¬Õâ¶Î´úÂëÔÚÁ½°æÄÚ²â°æÖĞ¾ù²»´æÔÚ
+	if (PeaAboutToHitTorchwood())  // â€œå¡ç«ç‚¬â€çš„åŸç†ï¼Œè¿™æ®µä»£ç åœ¨ä¸¤ç‰ˆå†…æµ‹ç‰ˆä¸­å‡ä¸å­˜åœ¨
 		return nullptr;
 
 	Rect aProjectileRect = GetProjectileRect();
@@ -737,7 +737,7 @@ void Projectile::UpdateMotion()
 #ifdef DO_FIX_BUGS
 	if (mProjectileType == ProjectileType::PROJECTILE_COBBIG)
 	{
-		aSlopeHeightChange = 0.0f;  // ĞŞ¸´¡°ÉÏ½çÖ®·ç¡±
+		aSlopeHeightChange = 0.0f;  // ä¿®å¤â€œä¸Šç•Œä¹‹é£â€
 	}
 #endif
 	if (mMotionType == ProjectileMotion::MOTION_FLOAT_OVER)

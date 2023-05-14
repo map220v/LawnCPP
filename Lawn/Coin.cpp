@@ -400,7 +400,7 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
 
 bool Coin::IsMoney(CoinType theType)
 {
-    // Õâ¸öº¯ÊıÔ­±¾ÊÇÍêÈ«Ã»ÓĞµÄ£¬µ«ÊÇÓÉÓÚÔÚ Board ÖĞÉæ¼°µ½£¬²¢ÇÒ¸Ğ¾õÄÜÔÚĞèÒªÌí¼ÓĞÂÇ®±ÒÖÖÀàµÄÊ±ºòÌá¹©·½±ã£¬ËùÒÔ¾ÍÁôÏÂÀ´ÁË
+    // è¿™ä¸ªå‡½æ•°åŸæœ¬æ˜¯å®Œå…¨æ²¡æœ‰çš„ï¼Œä½†æ˜¯ç”±äºåœ¨ Board ä¸­æ¶‰åŠåˆ°ï¼Œå¹¶ä¸”æ„Ÿè§‰èƒ½åœ¨éœ€è¦æ·»åŠ æ–°é’±å¸ç§ç±»çš„æ—¶å€™æä¾›æ–¹ä¾¿ï¼Œæ‰€ä»¥å°±ç•™ä¸‹æ¥äº†
     return theType == CoinType::COIN_SILVER || theType == CoinType::COIN_GOLD || theType == CoinType::COIN_DIAMOND;
 }
 
@@ -682,7 +682,7 @@ void Coin::UpdateCollected()
             {
                 if (mType == CoinType::COIN_PRESENT_MINIGAMES)
                 {
-                    // ×¢£º´Ë´¦µÄ theMessageStyle ²ÎÊı£¬Ô­°æÖĞÎª MESSAGE_STYLE_HINT_TALL_UNLOCKMESSAGE£¬ÄÚ²â°æÖĞÎª MESSAGE_STYLE_HINT_TALL_8SECONDS
+                    // æ³¨ï¼šæ­¤å¤„çš„ theMessageStyle å‚æ•°ï¼ŒåŸç‰ˆä¸­ä¸º MESSAGE_STYLE_HINT_TALL_UNLOCKMESSAGEï¼Œå†…æµ‹ç‰ˆä¸­ä¸º MESSAGE_STYLE_HINT_TALL_8SECONDS
                     mBoard->DisplayAdvice(_S("[UNLOCKED_MINIGAMES]"), MessageStyle::MESSAGE_STYLE_HINT_TALL_UNLOCKMESSAGE, AdviceType::ADVICE_UNLOCKED_MODE);
                 }
                 else if (mType == CoinType::COIN_PRESENT_PUZZLE_MODE)
@@ -752,7 +752,7 @@ void Coin::Update()
 
         if ((!mHitGround || mIsBeingCollected) && (mType == CoinType::COIN_SILVER || mType == CoinType::COIN_GOLD))
         {
-            AttachmentOverrideColor(mAttachmentID, Color(0, 0, 0, 0));  // ÔË¶¯ÖĞµÄ½ğ±ÒºÍÒø±ÒÊ¹ÓÃÌùÍ¼£¬¹ÊÒÔ´Ë·¨Òş²Ø¸½¼şµÄ¶¯»­
+            AttachmentOverrideColor(mAttachmentID, Color(0, 0, 0, 0));  // è¿åŠ¨ä¸­çš„é‡‘å¸å’Œé“¶å¸ä½¿ç”¨è´´å›¾ï¼Œæ•…ä»¥æ­¤æ³•éšè—é™„ä»¶çš„åŠ¨ç”»
         }
     }
 }
