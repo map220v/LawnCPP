@@ -18,8 +18,6 @@ Debug build crashes in credits song
 
 Guide arrow in sunflower tutorial[1-2] has wrong position
 
-Jalapeno Zombie doesn't die after explosion and continues to explode every update
-
 Beghouled swipe to the left doesn't work
 
 Beghouled Twist correct moves calculated incorrectly

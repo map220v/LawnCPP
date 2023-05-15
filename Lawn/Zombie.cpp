@@ -2380,6 +2380,7 @@ void Zombie::UpdateZombieJalapenoHead()
                 }
             }
         }
+        DieNoLoot();
 #else
         Plant* aPlant = nullptr;
         while (mBoard->IteratePlants(aPlant))
@@ -2391,6 +2392,7 @@ void Zombie::UpdateZombieJalapenoHead()
                 aPlant->Die();
             }
         }
+        DieNoLoot();
 #endif
     }
 }
