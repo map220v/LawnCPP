@@ -561,10 +561,10 @@ bool Challenge::BeghouledTwistMoveCausesMatch(int theGridX, int theGridY, Beghou
 	SeedType aSeed3 = theBoardState->mSeedType[theGridX][theGridY + 1];
 	SeedType aSeed4 = theBoardState->mSeedType[theGridX + 1][theGridY + 1];
 
+	theBoardState->mSeedType[theGridX][theGridY] = aSeed3;
 	theBoardState->mSeedType[theGridX + 1][theGridY] = aSeed1;
-	theBoardState->mSeedType[theGridX][theGridY + 1] = aSeed2;
-	theBoardState->mSeedType[theGridX + 1][theGridY + 1] = aSeed3;
-	theBoardState->mSeedType[theGridX][theGridY] = aSeed4;
+	theBoardState->mSeedType[theGridX][theGridY + 1] = aSeed4;
+	theBoardState->mSeedType[theGridX + 1][theGridY + 1] = aSeed2;
 
 	bool aHasMatch = BeghouledBoardHasMatch(theBoardState);
 
@@ -674,7 +674,7 @@ void Challenge::BeghouledDragUpdate(int x, int y)
 		int aGridXFrom = mBoard->PixelToGridX(mBeghouledMouseDownX, mBeghouledMouseDownY);
 		int aGridYFrom = mBoard->PixelToGridY(mBeghouledMouseDownX, mBeghouledMouseDownY);
 		int aGridXTo, aGridYTo;
-		if (aDeltaX > aDeltaY)
+		if (abs(aDeltaX) > abs(aDeltaY))
 		{
 			aGridXTo = aGridXFrom + (aDeltaX > 0 ? 1 : -1);
 			aGridYTo = aGridYFrom;
@@ -1108,12 +1108,9 @@ bool Challenge::BeghouledCheckForPossibleMoves(BeghouledBoardState* theBoardStat
 					return true;
 				}
 			}
-			else
-			{
-				return false;
-			}
 		}
 	}
+	return false;
 }
 
 void Challenge::BeghouledDragStart(int x, int y)
@@ -2125,6 +2122,7 @@ void Challenge::ZombieAtePlant(Zombie* theZombie, Plant* thePlant)
 	if (mBoard->mSeedBank->mNumPackets == 4)
 	{
 		mBoard->mSeedBank->mSeedPackets[4].SetPacketType(SEED_BEGHOULED_BUTTON_CRATER);
+		mBoard->mSeedBank->mNumPackets = 5;
 		mBoard->DisplayAdvice(_S("[ADVICE_BEGHOULED_USE_CRATER_1]"), MESSAGE_STYLE_HINT_FAST, ADVICE_BEGHOULED_USE_CRATER_1);
 	}
 
@@ -3563,6 +3561,7 @@ void Challenge::BeghouledPacketClicked(SeedPacket* theSeedPacket)
 				mBoard->AddPlant(aPlant->mPlantCol, aPlant->mRow, SEED_REPEATER, SEED_NONE);
 			}
 		}
+		theSeedPacket->Deactivate();
 	}
 	else if (theSeedPacket->mPacketType == SEED_FUMESHROOM && !mBoard->mChallenge->mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_FUMESHROOM])
 	{
@@ -3577,6 +3576,7 @@ void Challenge::BeghouledPacketClicked(SeedPacket* theSeedPacket)
 				mBoard->AddPlant(aPlant->mPlantCol, aPlant->mRow, SEED_FUMESHROOM, SEED_NONE);
 			}
 		}
+		theSeedPacket->Deactivate();
 	}
 	else if (theSeedPacket->mPacketType == SEED_TALLNUT && !mBoard->mChallenge->mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_TALLNUT])
 	{
@@ -3591,6 +3591,7 @@ void Challenge::BeghouledPacketClicked(SeedPacket* theSeedPacket)
 				mBoard->AddPlant(aPlant->mPlantCol, aPlant->mRow, SEED_TALLNUT, SEED_NONE);
 			}
 		}
+		theSeedPacket->Deactivate();
 	}
 	else if (theSeedPacket->mPacketType == SEED_BEGHOULED_BUTTON_SHUFFLE)
 	{
