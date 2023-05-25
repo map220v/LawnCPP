@@ -16,11 +16,7 @@ Debug build fails to load assets from main.pak
 
 Debug build crashes in credits song
 
-Last Stand crash after win (_vsnprintf)
-
 Tree of Wisdom crash/broken
-
-Survival/Endless mode progress text broken
 
 "I, Zombie" Bungee Zombie cannot be placed on plants
 

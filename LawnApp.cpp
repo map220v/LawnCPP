@@ -902,7 +902,7 @@ void LawnApp::DoConfirmDeleteUserDialog(const SexyString& theName)
 		true, 
 		_S("Are You Sure"/*"[ARE_YOU_SURE]"*/), 
 		// StrFormat(TodStringTranslate(_S("[DELETE_USER_WARNING]")).c_str(), StringToSexyStringFast(theName))
-		StrFormat(_S("This will permanently remove '%s' from the player roster!")/**/, theName),
+		StrFormat(_S("This will permanently remove '%s' from the player roster!"), theName.c_str()),
 		_S(""), 
 		Dialog::BUTTONS_YES_NO
 	);

@@ -6814,7 +6814,7 @@ void Board::DrawLevel(Graphics* g)
 			{
 				SexyString aFlagStr = mApp->Pluralize(aFlags, _S("[ONE_FLAG]"), _S("[COUNT_FLAGS]"));
 				SexyString aCompletedStr = TodReplaceString(_S("[FLAGS_COMPLETED]"), _S("{FLAGS}"), aFlagStr);
-				aLevelStr = StrFormat(_S("%s - %s"), TodStringTranslate(aLevelStr), aCompletedStr);
+				aLevelStr = StrFormat(_S("%s - %s"), TodStringTranslate(aLevelStr).c_str(), aCompletedStr.c_str());
 			}
 		}
 		else if (mApp->IsEndlessIZombie(mApp->mGameMode) || mApp->IsEndlessScaryPotter(mApp->mGameMode))
@@ -6827,7 +6827,7 @@ void Board::DrawLevel(Graphics* g)
 			if (aStreak > 0)
 			{
 				SexyString aStreakStr = TodReplaceNumberString(_S("[ENDLESS_STREAK]"), _S("{STREAK}"), aStreak);
-				aLevelStr = StrFormat(_S("%s - %s"), TodStringTranslate(aLevelStr), aStreakStr);
+				aLevelStr = StrFormat(_S("%s - %s"), TodStringTranslate(aLevelStr).c_str(), aStreakStr.c_str());
 			}
 		}
 	}
