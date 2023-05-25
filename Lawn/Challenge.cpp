@@ -1313,9 +1313,9 @@ bool Challenge::MouseDown(int x, int y, int theClickCount, HitResult* theHitResu
 		return true;
 	}
 
-	if (mApp->mGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM && theClickCount <= 0)
+	if (mApp->mGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM && theHitResult->mObjectType == OBJECT_TYPE_NONE)
 	{
-		mApp->PlaySample(Sexy::SOUND_TAPGLASS);
+		ZombiquariumMouseDown(x, y);
 		return true;
 	}
 
@@ -2323,11 +2323,12 @@ void Challenge::DrawArtChallenge(Graphics* g)
 		}
 	}
 	
-	if (mApp->mGameMode == GAMEMODE_CHALLENGE_ART_CHALLENGE_WALLNUT)
+	// Only for beta 0.1.1
+	/*if (mApp->mGameMode == GAMEMODE_CHALLENGE_ART_CHALLENGE_WALLNUT)
 	{
 		g->DrawImage(Sexy::IMAGE_GOOGLYEYE, 357, 174);
 		g->DrawImage(Sexy::IMAGE_GOOGLYEYE, 516, 174);
-	}
+	}*/
 
 	g->SetColorizeImages(false);
 }
@@ -3762,11 +3763,11 @@ void Challenge::ZombiquariumUpdate()
 		mBoard->TutorialArrowShow(aPosX, aPosY);
 		mBoard->DisplayAdvice("[ADVICE_ZOMBIQUARIUM_CLICK_TROPHY]", MESSAGE_STYLE_HINT_TALL_FAST, ADVICE_ZOMBIQUARIUM_CLICK_TROPHY);
 	}
-	else if (aScore <= ZOMBIQUARIUM_WINNING_SCORE && mBoard->mTutorialState == TUTORIAL_ZOMBIQUARIUM_CLICK_TROPHY)
+	else if (aScore < ZOMBIQUARIUM_WINNING_SCORE && mBoard->mTutorialState == TUTORIAL_ZOMBIQUARIUM_CLICK_TROPHY)
 	{
 		mBoard->TutorialArrowRemove();
 		mBoard->ClearAdvice(ADVICE_ZOMBIQUARIUM_CLICK_TROPHY);
-		mBoard->mTutorialState = TUTORIAL_OFF;
+		mBoard->mTutorialState = TUTORIAL_ZOMBIQUARIUM_BOUGHT_SNORKEL;
 	}
 
 	GridItem* aGridItem = nullptr;
@@ -3789,7 +3790,7 @@ void Challenge::ShovelAddWallnuts()
 {
 	for (int aCol = 0; aCol < MAX_GRID_SIZE_X; aCol++)
 	{
-		for (int aRow = 0; aRow < MAX_GRID_SIZE_Y; aRow++)
+		for (int aRow = 0; aRow < MAX_GRID_SIZE_Y - 1; aRow++)
 		{
 			mBoard->AddPlant(aCol, aRow, SEED_WALLNUT, SEED_NONE);
 		}

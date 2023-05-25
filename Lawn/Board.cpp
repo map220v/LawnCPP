@@ -1448,6 +1448,12 @@ void Board::InitLevel()
 		mSeedBank->mSeedPackets[4].SetPacketType(SeedType::SEED_SNOWPEA);
 		mSeedBank->mSeedPackets[5].SetPacketType(SeedType::SEED_CHOMPER);
 	}
+	else if (aGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM)
+	{
+		TOD_ASSERT(mSeedBank->mNumPackets == 2);
+		mSeedBank->mSeedPackets[0].SetPacketType(SeedType::SEED_ZOMBIQUARIUM_SNORKLE);
+		mSeedBank->mSeedPackets[1].SetPacketType(SeedType::SEED_ZOMBIQUARIUM_TROPHY);
+	}
 	else if (aGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_1)
 	{
 		TOD_ASSERT(mSeedBank->mNumPackets == 3);
@@ -3496,7 +3502,7 @@ void Board::UpdateToolTip()
 	}
 	else if (aUseSeedType == SeedType::SEED_ZOMBIQUARIUM_SNORKLE)
 	{
-		mToolTip->SetLabel(_S("[ZOMBIQUARIUM_SNORKLE_TOOLTIP]"));
+		mToolTip->SetLabel(_S("[ZOMBIQUARIUM_SNORKEL_TOOLTIP]"));
 	}
 	else if (aUseSeedType == SeedType::SEED_ZOMBIQUARIUM_TROPHY)
 	{
@@ -5709,7 +5715,7 @@ void Board::SetTutorialState(TutorialState theTutorialState)
 
 	case TutorialState::TUTORIAL_LEVEL_2_PICK_UP_SUNFLOWER:
 	case TutorialState::TUTORIAL_MORESUN_PICK_UP_SUNFLOWER:
-		TutorialArrowShow(mSeedBank->mX + mSeedBank->mSeedPackets[1].mX, mSeedBank->mX + mSeedBank->mSeedPackets[1].mX);
+		TutorialArrowShow(mSeedBank->mX + mSeedBank->mSeedPackets[1].mX, mSeedBank->mY + mSeedBank->mSeedPackets[1].mY);
 		break;
 
 	case TutorialState::TUTORIAL_LEVEL_2_PLANT_SUNFLOWER:

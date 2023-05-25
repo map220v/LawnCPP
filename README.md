@@ -16,15 +16,7 @@ Debug build fails to load assets from main.pak
 
 Debug build crashes in credits song
 
-Guide arrow in sunflower tutorial[1-2] has wrong position
-
-Seeing Stars and all Art Challenges crash
-
-Zombiquarium wrong seed packets
-
 Last Stand crash after win (_vsnprintf)
-
-"Can you dig it?" has Wall-nuts on row 6
 
 Tree of Wisdom crash/broken
 
