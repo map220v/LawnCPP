@@ -7008,7 +7008,7 @@ void Board::DrawZenButtons(Graphics* g)
 					g->SetColorizeImages(true);
 					g->SetColor(Color(128, 128, 128));
 				}
-				g->DrawImage(Sexy::IMAGE_CHOCOLATE, aButtonRect.mX - 6, aButtonRect.mY + aOffsetY - 7);
+				g->DrawImage(Sexy::IMAGE_TREEFOOD, aButtonRect.mX - 6, aButtonRect.mY + aOffsetY - 7);
 				g->SetColorizeImages(false);
 
 				SexyString aChargeString = StrFormat(_S("x%d"), aCharges);

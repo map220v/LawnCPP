@@ -16,6 +16,4 @@ Debug build fails to load assets from main.pak
 
 Debug build crashes in credits song
 
-Tree of Wisdom crash/broken
-
 </details>

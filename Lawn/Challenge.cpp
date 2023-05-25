@@ -5299,7 +5299,7 @@ void Challenge::TreeOfWisdomDraw(Graphics* g)
 
 	Reanimation* aReanimTree = mApp->ReanimationGet(mReanimChallenge);
 	aReanimTree->mEnableExtraOverlayDraw = false;
-	aReanimTree->DrawRenderGroup(g, 0);  // 绘制背景
+	aReanimTree->DrawRenderGroup(g, 1);  // 绘制背景
 	for (int i = 0; i < 6; i++)
 	{
 		mApp->ReanimationGet(mReanimClouds[i])->DrawRenderGroup(g, 0);
@@ -5347,7 +5347,7 @@ void Challenge::TreeOfWisdomDraw(Graphics* g)
 		else
 		{
 			aPosX = 390;
-			aPosY = 52;
+			aPosY = 40;
 		}
 
 		g->DrawImage(Sexy::IMAGE_STORE_SPEECHBUBBLE2, aPosX, aPosY);
@@ -5394,7 +5394,7 @@ void Challenge::TreeOfWisdomInit()
 
 	int aTreeSize = ClampInt(TreeOfWisdomGetSize(), 1, 50);
 	aReanimTree->PlayReanim(StrFormat("anim_grow%d", aTreeSize).c_str(), REANIM_PLAY_ONCE_AND_HOLD, 0, 18.0f);
-	if (aTreeSize == 0 && mApp->mPlayerInfo->mPurchases[STORE_ITEM_TREE_FOOD] < PURCHASE_COUNT_OFFSET)
+	if (aTreeSize == 1 && mApp->mPlayerInfo->mPurchases[STORE_ITEM_TREE_FOOD] < PURCHASE_COUNT_OFFSET)
 	{
 		aReanimTree->mFrameCount += aReanimTree->mFrameStart;
 		aReanimTree->mFrameStart = 0;
@@ -5594,7 +5594,7 @@ void Challenge::TreeOfWisdomUpdate()
 		}
 	}
 
-	for (int i = 6; i > 0; i--)
+	for (int i = 5; i >= 0; i--)
 	{
 		Reanimation* aReanimCloud = mApp->ReanimationGet(mReanimClouds[i]);
 		if (mCloudsCounter[i] > 0)
@@ -5665,7 +5665,7 @@ bool Challenge::TreeOfWisdomHitTest(int theX, int theY, HitResult* theHitResult)
 {
 	Rect aTreeRect;
 	int aTreeSize = TreeOfWisdomGetSize();
-	if (aTreeSize <= 1)			aTreeRect = Rect(310, 175, 275, 175);
+	if (aTreeSize <= 1)			aTreeRect = Rect(310, 275, 175, 175);
 	else if (aTreeSize < 7)		aTreeRect = Rect(290, 255, 205, 195);
 	else if (aTreeSize < 12)	aTreeRect = Rect(290, 215, 205, 225);
 	else						aTreeRect = Rect(280, 155, 225, 305);
