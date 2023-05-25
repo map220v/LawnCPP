@@ -18,8 +18,4 @@ Debug build crashes in credits song
 
 Tree of Wisdom crash/broken
 
-"I, Zombie" Bungee Zombie cannot be placed on plants
-
-"Zen Garden" bug spray icon wrong position
-
 </details>

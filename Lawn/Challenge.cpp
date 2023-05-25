@@ -2466,7 +2466,7 @@ PlantingReason Challenge::CanPlantAt(int theGridX, int theGridY, SeedType theSee
 			aLimit = 5;
 		}
 
-		if (theSeedType == ZOMBIE_BUNGEE)
+		if (theSeedType == SEED_ZOMBIE_BUNGEE)
 		{
 			return theGridX < aLimit ? PLANTING_OK : PLANTING_NOT_HERE;
 		}
@@ -4377,7 +4377,7 @@ void Challenge::IZombiePlaceZombie(ZombieType theZombieType, int theGridX, int t
 	if (theZombieType == ZOMBIE_BUNGEE)
 	{
 		aZombie->mTargetCol = theGridX;
-		aZombie->SetRow(theGridX);
+		aZombie->SetRow(theGridY);
 		aZombie->mPosX = mBoard->GridToPixelX(theGridX, theGridY);
 		aZombie->mPosY = aZombie->GetPosYBasedOnRow(theGridY);
 		aZombie->mRenderOrder = Board::MakeRenderOrder(RENDER_LAYER_GRAVE_STONE, theGridY, 7);
