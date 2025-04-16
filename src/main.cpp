@@ -3,7 +3,7 @@
 #endif
 
 #ifdef __ANDROID__
-#include "SDL.h"
+#include <SDL3/SDL.h>
 #endif
 
 #include "LawnApp.h"
@@ -24,7 +24,7 @@ int main(const int argc, char *argv[]) {
     gExtractResourcesByName = Sexy::ExtractResourcesByName;
 
 #ifdef __ANDROID__
-    SetAppDataFolder(SDL_AndroidGetExternalStoragePath());
+    SetAppDataFolder(SDL_GetAndroidExternalStoragePath());
 #endif
 
     TodLogger aTodLogger{};

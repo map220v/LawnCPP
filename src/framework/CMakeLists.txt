@@ -81,12 +81,12 @@ set(SDL_SHARED OFF CACHE BOOL "" FORCE)
 set(SDL_STATIC ON CACHE BOOL "" FORCE)
 set(SDL_TEST OFF CACHE BOOL "" FORCE)
 set(SDL_LIBC ON CACHE BOOL "" FORCE)
-FetchGit_Declare(https://github.com/libsdl-org/SDL/tree/release-2.32.x)
+FetchGit_Declare(https://github.com/libsdl-org/SDL/tree/release-3.2.x)
 FetchContent_MakeAvailable(SDL)
 
 include_directories(${SDL_SOURCE_DIR}/include)
 
-FetchGit_Declare(https://github.com/libsdl-org/SDL_image/tree/release-2.8.x)
+FetchGit_Declare(https://github.com/libsdl-org/SDL_image/tree/release-3.2.x)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(SDL_image)
 
@@ -118,8 +118,8 @@ add_library(avir INTERFACE)
 target_link_libraries(
         ${PROJECT_NAME}
         PRIVATE
-        SDL2::SDL2-static
-        SDL2_image::SDL2_image-static
+        SDL3::SDL3-static
+        SDL3_image::SDL3_image-static
         # SDL2_ttf::SDL2_ttf-static
         #SDL2_mixer::SDL2_mixer-static
         zlibstatic

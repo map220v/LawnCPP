@@ -6,8 +6,6 @@
 #include "WidgetManager.h"
 #include "graphics/Font.h"
 
-#include "SDL.h"
-
 using namespace Sexy;
 
 static int gEditWidgetColors[][3] = {
@@ -166,6 +164,8 @@ void EditWidget::UpdateCaretPos() {
 }
 
 void EditWidget::GotFocus() {
+    SexyAppBase *anApp = mWidgetManager->mApp;
+
     Widget::GotFocus();
     /*
     if (mWidgetManager && mWidgetManager->mApp->mTabletPC) {
@@ -179,13 +179,15 @@ void EditWidget::GotFocus() {
     }
     */
 
-    SDL_StartTextInput();
+    anApp->mWindowInterface->StartTextInput();
     mShowingCursor = true;
     mBlinkAcc = 0;
     MarkDirty();
 }
 
 void EditWidget::LostFocus() {
+    SexyAppBase *anApp = mWidgetManager->mApp;
+
     Widget::LostFocus();
     /*
     if (mWidgetManager && mWidgetManager->mApp->mTabletPC) {
@@ -197,7 +199,7 @@ void EditWidget::LostFocus() {
     }
     */
 
-    SDL_StopTextInput();
+    anApp->mWindowInterface->StopTextInput();
     mShowingCursor = false;
     MarkDirty();
 }

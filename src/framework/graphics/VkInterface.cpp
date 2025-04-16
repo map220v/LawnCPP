@@ -1,9 +1,9 @@
 #include "VkInterface.h"
 #include "VkCommon.h"
-#include "SDL.h"
-#include "SDL_keycode.h"
-#include "SDL_video.h"
-#include "SDL_vulkan.h"
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_keycode.h>
+#include <SDL3/SDL_video.h>
+#include <SDL3/SDL_vulkan.h>
 #include "SexyAppBase.h"
 #include "compiler/map.h"
 #include "graphics/Color.h"
@@ -12,8 +12,8 @@
 #include "misc/KeyCodes.h"
 #include "widget/WidgetManager.h"
 
-#include <SDL_events.h>
-#include <SDL_mouse.h>
+#include <SDL3/SDL_events.h>
+#include <SDL3/SDL_mouse.h>
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -151,7 +151,7 @@ void DestroyDebugUtilsMessengerEXT(
 void setupDebugMessenger();
 
 bool checkValidationLayerSupport();
-std::vector<const char *> getRequiredExtensions();
+const char **getRequiredExtensions(Uint32 *count);
 void createInstance();
 
 void SetCursor(int idx);
@@ -229,7 +229,7 @@ public:
 
     explicit sdlCursor(SDL_SystemCursor shape) { cursor = SDL_CreateSystemCursor(shape); }
 
-    ~sdlCursor() { SDL_FreeCursor(cursor); }
+    ~sdlCursor() { SDL_DestroyCursor(cursor); }
 };
 
 std::map<int, std::unique_ptr<sdlCursor>> cursorMap;
@@ -241,7 +241,7 @@ constexpr auto GenerateAsciiKeymap() {
     for (size_t key = 0; key < sparse_array.size(); ++key) {
         auto offset = static_cast<int>(key);
         if (key >= SDLK_0 && key <= SDLK_9) offset = SDLK_0 - '0';
-        if (key >= SDLK_a && key <= SDLK_z) offset = SDLK_a - 'A';
+        if (key >= SDLK_A && key <= SDLK_Z) offset = SDLK_A - 'A';
         if (key >= (SDLK_KP_1 - scan_shift) && key <= (SDLK_KP_0 - scan_shift))
             offset = (SDLK_KP_0 - scan_shift) - KEYCODE_NUMPAD0;
         if (key >= (SDLK_F1 - scan_shift) && key <= (SDLK_F24 - scan_shift))
@@ -1059,7 +1059,7 @@ VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
         return capabilities.currentExtent;
     } else {
         int width, height;
-        SDL_Vulkan_GetDrawableSize(window, &width, &height);
+        SDL_GetWindowSizeInPixels(window, &width, &height);
 
         VkExtent2D actualExtent = {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
 
@@ -1170,9 +1170,9 @@ void createWindowBuffer(int intendedWidth, int intendedHeight) {
 void recreateSwapChain() {
     int width = 0, height = 0;
 
-    SDL_Vulkan_GetDrawableSize(window, &width, &height);
+    SDL_GetWindowSizeInPixels(window, &width, &height);
     while (width == 0 || height == 0) {
-        SDL_Vulkan_GetDrawableSize(window, &width, &height);
+        SDL_GetWindowSizeInPixels(window, &width, &height);
         std::this_thread::sleep_for(std::chrono::duration<double>(0.01));
     }
 
@@ -1187,7 +1187,7 @@ void recreateSwapChain() {
 }
 
 void createSurface() {
-    if (SDL_Vulkan_CreateSurface(window, instance, &surface) != SDL_TRUE) {
+    if (!SDL_Vulkan_CreateSurface(window, instance, nullptr, &surface)) {
         throw std::runtime_error("failed to create window surface!");
     }
 }
@@ -1399,16 +1399,23 @@ bool checkValidationLayerSupport() {
     return true;
 }
 
-std::vector<const char *> getRequiredExtensions() {
-    uint32_t sdlExtensionCount = 0;
+const char **getRequiredExtensions(Uint32 *count) {
+    Uint32 count_instance_extensions;
+    const char * const *instance_extensions = SDL_Vulkan_GetInstanceExtensions(&count_instance_extensions);
 
-    SDL_Vulkan_GetInstanceExtensions(window, &sdlExtensionCount, nullptr);
-    std::vector<const char *> extensions(sdlExtensionCount);
-
-    SDL_Vulkan_GetInstanceExtensions(window, &sdlExtensionCount, extensions.data());
+    if (enableValidationLayers)
+        *count = count_instance_extensions + 2;
+    else
+        *count = count_instance_extensions;
+    const char **extensions = (const char **)SDL_malloc(*count * sizeof(const char *));
 
     if (enableValidationLayers) {
-        extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+        extensions[0] = VK_EXT_DEBUG_REPORT_EXTENSION_NAME;
+        extensions[1] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+
+        SDL_memcpy(&extensions[2], instance_extensions, count_instance_extensions * sizeof(const char*));
+    } else {
+        SDL_memcpy(&extensions[0], instance_extensions, count_instance_extensions * sizeof(const char*));
     }
 
     return extensions;
@@ -1431,9 +1438,10 @@ void createInstance() {
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
 
-    const auto extensions = getRequiredExtensions();
-    createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-    createInfo.ppEnabledExtensionNames = extensions.data();
+    Uint32 count_extensions = 0;
+    const auto extensions = getRequiredExtensions(&count_extensions);
+    createInfo.enabledExtensionCount = count_extensions;
+    createInfo.ppEnabledExtensionNames = extensions;
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
     if (enableValidationLayers) {
@@ -1454,7 +1462,7 @@ void createInstance() {
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, vk_extensions.data());
 
     // Check for required extensions
-    for (uint32_t i = 0; i < extensions.size(); ++i) {
+    for (uint32_t i = 0; i < count_extensions; ++i) {
         for (const auto &vk_extension : vk_extensions)
             if (strcmp(vk_extension.extensionName, extensions[i]) == 0) goto ext_found;
         throw std::runtime_error("Could not find extension required for SDL.");
@@ -1519,23 +1527,23 @@ VkInterface::~VkInterface() {
 }
 
 int VkInterface::GetRefreshRate() {
-    static std::optional<int> aDisplayIdx = std::nullopt;
+    static std::optional<SDL_DisplayID> aDisplayIdx = std::nullopt;
     static int aUpdateCount = 0;
-    static SDL_DisplayMode aMode;
-    const auto aNewDisplayIdx = SDL_GetWindowDisplayIndex(window);
-    if (!aDisplayIdx.has_value() || aDisplayIdx.value() != aNewDisplayIdx || aUpdateCount > aMode.refresh_rate) {
+    static const SDL_DisplayMode *aMode;
+    const auto aNewDisplayIdx = SDL_GetDisplayForWindow(window);
+    if (!aDisplayIdx.has_value() || aDisplayIdx.value() != aNewDisplayIdx || aUpdateCount > 0) {
         aUpdateCount = 0;
         aDisplayIdx = aNewDisplayIdx;
-        SDL_GetDesktopDisplayMode(aDisplayIdx.value(), &aMode);
+        aMode = SDL_GetDesktopDisplayMode(aDisplayIdx.value());
     }
 
     aUpdateCount++;
-    return aMode.refresh_rate;
+    return aMode->refresh_rate;
 }
 
 void VkInterface::UpdateWindowOptions(const int width, const int height, const bool fullscreen) {
     SDL_SetWindowSize(window, width, height);
-    SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+    SDL_SetWindowFullscreen(window, fullscreen);
 }
 
 void VkInterface::framebufferResizeCallback() { framebufferResized = true; }
@@ -1598,7 +1606,7 @@ void VkInterface::cursorEnterCallback(int entered) {
     }
 }
 
-void VkInterface::cursorPositionCallback(double xpos, double ypos) {
+void VkInterface::cursorPositionCallback(float xpos, float ypos) {
     cursorPos = {(xpos - windowImageClipRect.x) / windowImageScale, (ypos - windowImageClipRect.y) / windowImageScale};
 
     glm::vec<2, int> intPos = cursorPos;
@@ -1611,12 +1619,12 @@ void VkInterface::cursorPositionCallback(double xpos, double ypos) {
     }
 }
 
-void Vk::VkInterface::mouseWheelCallback(double xoffset, double yoffset) {
+void Vk::VkInterface::mouseWheelCallback(float xoffset, float yoffset) {
     (void)xoffset; // unusued
     widgetManager->MouseWheel(yoffset);
 }
 
-void VkInterface::mouseButtonCallback(int button, int state, int clicks) const {
+void VkInterface::mouseButtonCallback(int button, bool down, int clicks) const {
     constexpr auto mouseButtonTranslationTable = compiler::SparseArray<std::array<std::pair<int, int>, 3>{
         {
          {SDL_BUTTON_LEFT, 1},
@@ -1627,14 +1635,14 @@ void VkInterface::mouseButtonCallback(int button, int state, int clicks) const {
 
     int wmButton = mouseButtonTranslationTable[button];
     if (clicks == 2 && wmButton != 3) wmButton *= 2; // create double click
-    if (state == SDL_PRESSED) {
+    if (down) {
         widgetManager->MouseDown(cursorPos.x, cursorPos.y, wmButton);
     } else {
         widgetManager->MouseUp(cursorPos.x, cursorPos.y, wmButton);
     }
 }
 
-void VkInterface::keyCallback(uint32_t key, uint8_t state) {
+void VkInterface::keyCallback(uint32_t key, bool down) {
     if (key == SDLK_UNKNOWN) return;
 
     auto code = ControlKeyMapping.find(key);
@@ -1642,14 +1650,14 @@ void VkInterface::keyCallback(uint32_t key, uint8_t state) {
         if (key & SDLK_SCANCODE_MASK) key -= SDLK_SCANCODE_MASK - 128;
         code = AsciiKeyMapping[static_cast<uint8_t>(key)];
     }
-    if (state == SDL_PRESSED) {
+    if (down) {
         widgetManager->KeyDown(code.value());
     } else {
         widgetManager->KeyUp(code.value());
     }
 }
 
-void VkInterface::charCallback(char codepoint[32]) {
+void VkInterface::charCallback(const char codepoint[32]) {
     widgetManager->KeyChar(std::string(codepoint)[0]);
     // !TODO: broken, but one day utf8
 }
@@ -1663,26 +1671,22 @@ void VkInterface::PollEvents() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
-        case SDL_MOUSEMOTION: cursorPositionCallback(event.motion.x, event.motion.y); break;
-        case SDL_MOUSEWHEEL:  mouseWheelCallback(event.wheel.x, event.wheel.y); break;
-        case SDL_MOUSEBUTTONDOWN:
-        case SDL_MOUSEBUTTONUP:
-            mouseButtonCallback(event.button.button, event.button.state, event.button.clicks);
+        case SDL_EVENT_MOUSE_MOTION: cursorPositionCallback(event.motion.x, event.motion.y); break;
+        case SDL_EVENT_MOUSE_WHEEL:  mouseWheelCallback(event.wheel.x, event.wheel.y); break;
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
+        case SDL_EVENT_MOUSE_BUTTON_UP:
+            mouseButtonCallback(event.button.button, event.button.down, event.button.clicks);
             break;
-        case SDL_KEYDOWN:
-        case SDL_KEYUP:     keyCallback(event.key.keysym.sym, event.key.state); break;
-        case SDL_TEXTINPUT: charCallback(event.text.text); break;
-        case SDL_QUIT:      windowCloseCallback(); break;
+        case SDL_EVENT_KEY_DOWN:
+        case SDL_EVENT_KEY_UP:     keyCallback(event.key.key, event.key.down); break;
+        case SDL_EVENT_TEXT_INPUT: charCallback(event.text.text); break;
+        case SDL_EVENT_QUIT:       windowCloseCallback(); break;
 
-        case SDL_WINDOWEVENT:
-            switch (event.window.event) {
-            case SDL_WINDOWEVENT_RESIZED:      framebufferResizeCallback(); break;
-            case SDL_WINDOWEVENT_FOCUS_GAINED: windowFocusCallback(true); break;
-            case SDL_WINDOWEVENT_FOCUS_LOST:   windowFocusCallback(false); break;
-            case SDL_WINDOWEVENT_ENTER:        cursorEnterCallback(true); break;
-            case SDL_WINDOWEVENT_LEAVE:        cursorEnterCallback(false); break;
-            }
-            break;
+        case SDL_EVENT_WINDOW_RESIZED:      framebufferResizeCallback(); break;
+        case SDL_EVENT_WINDOW_FOCUS_GAINED: windowFocusCallback(true); break;
+        case SDL_EVENT_WINDOW_FOCUS_LOST:   windowFocusCallback(false); break;
+        case SDL_EVENT_WINDOW_MOUSE_ENTER:        cursorEnterCallback(true); break;
+        case SDL_EVENT_WINDOW_MOUSE_LEAVE:        cursorEnterCallback(false); break;
         }
     }
 }
@@ -1692,16 +1696,14 @@ bool Vk::VkInterface::IsFocused() { return widgetManager->mApp->mActive; }
 void initSDL(const int width, const int height, const bool fullscreen) {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
-    uint32_t flags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN;
+    uint32_t flags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_HIDDEN;
     if (fullscreen) {
-        flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+        flags |= SDL_WINDOW_FULLSCREEN;
     }
 
-    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
-    SDL_SetHint(SDL_HINT_IME_SUPPORT_EXTENDED_TEXT, "1");
+    SDL_SetHint(SDL_HINT_IME_IMPLEMENTED_UI, "1");
 
-    window =
-        SDL_CreateWindow("Plants Vs Zombies", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
+    window = SDL_CreateWindow("Plants Vs Zombies", width, height, flags);
 }
 
 VkInterface::VkInterface(int width, int height, WidgetManager *mWidgetManager, bool fullscreen) {
@@ -1735,31 +1737,31 @@ void SetCursor(int idx) {
     static int currentCursor = -1;
     static bool isShown = true;
     constexpr std::optional<SDL_SystemCursor> standardCursorLut[] = {
-        SDL_SYSTEM_CURSOR_ARROW,
+        SDL_SYSTEM_CURSOR_DEFAULT,
         // CURSOR_POINTER,
-        SDL_SYSTEM_CURSOR_HAND,
+        SDL_SYSTEM_CURSOR_POINTER,
         // CURSOR_HAND,
         SDL_SYSTEM_CURSOR_CROSSHAIR,
         // CURSOR_DRAGGING,
-        SDL_SYSTEM_CURSOR_IBEAM,
+        SDL_SYSTEM_CURSOR_TEXT,
         // CURSOR_TEXT,
-        SDL_SYSTEM_CURSOR_NO,
+        SDL_SYSTEM_CURSOR_NOT_ALLOWED,
         // CURSOR_CIRCLE_SLASH,
-        SDL_SYSTEM_CURSOR_SIZEALL,
+        SDL_SYSTEM_CURSOR_MOVE,
         // CURSOR_SIZEALL,
-        SDL_SYSTEM_CURSOR_SIZENESW,
+        SDL_SYSTEM_CURSOR_NESW_RESIZE,
         // CURSOR_SIZENESW,
-        SDL_SYSTEM_CURSOR_SIZENS,
+        SDL_SYSTEM_CURSOR_NS_RESIZE,
         // CURSOR_SIZENS,
-        SDL_SYSTEM_CURSOR_SIZENWSE,
+        SDL_SYSTEM_CURSOR_NWSE_RESIZE,
         // CURSOR_SIZENWSE,
-        SDL_SYSTEM_CURSOR_SIZEWE,
+        SDL_SYSTEM_CURSOR_EW_RESIZE,
         // CURSOR_SIZEWE,
         SDL_SYSTEM_CURSOR_WAIT,
         // CURSOR_WAIT,
         {},
         // CURSOR_NONE,
-        SDL_SYSTEM_CURSOR_ARROW,
+        SDL_SYSTEM_CURSOR_DEFAULT,
         // CURSOR_DEFAULT,
         {},
         // CURSOR_CUSTOM,
@@ -1769,12 +1771,12 @@ void SetCursor(int idx) {
     currentCursor = idx;
 
     if (standardCursorLut[idx].has_value()) {
-        if (!isShown) SDL_ShowCursor(SDL_ENABLE);
+        if (!isShown) SDL_ShowCursor();
         isShown = true;
         SDL_SetCursor(cursorMap.try_emplace(idx, std::make_unique<sdlCursor>(standardCursorLut[idx].value()))
                           .first->second->cursor);
     } else {
-        if (isShown) SDL_ShowCursor(SDL_DISABLE);
+        if (isShown) SDL_HideCursor();
         isShown = false;
     }
 }
@@ -1798,7 +1800,11 @@ void VkInterface::ShowWindow() { SDL_ShowWindow(window); }
 
 bool VkInterface::ShouldClose() const { return windowShouldClose; }
 
-void VkInterface::ReleaseMouseCapture() { SDL_ShowCursor(SDL_ENABLE); }
+void VkInterface::ReleaseMouseCapture() { SDL_ShowCursor(); }
+
+void VkInterface::StartTextInput() { SDL_StartTextInput(window); }
+
+void VkInterface::StopTextInput() { SDL_StopTextInput(window); }
 
 void VkInterface::Draw() {
     renderMutex.lock();

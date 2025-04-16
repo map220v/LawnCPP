@@ -41,6 +41,8 @@ public:
     void ReleaseMouseCapture() { static_cast<T *>(this)->ReleaseMouseCapture(); }
     void Draw() { static_cast<T *>(this)->Draw(); }
     void EnforceCursor() { static_cast<T *>(this)->EnforceCursor(); }
+    void StartTextInput() { static_cast<T *>(this)->StartTextInput(); }
+    void StopTextInput() { static_cast<T *>(this)->StopTextInput(); }
 
     int
     CreateCursor(int xHotSpot, int yHotSpot, int nWidth, int nHeight, const void *pvANDPlane, const void *pvXORPlane) {

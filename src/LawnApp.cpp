@@ -54,7 +54,7 @@
 #include "framework/graphics/WindowInterface.h"
 #include "framework/misc/ResourceManager.h"
 
-#include "SDL.h"
+#include <SDL3/SDL.h>
 
 bool gIsPartnerBuild = false; // GOTY @Patoke: 0x729659
 bool gSlowMo = false;         // 0x6A9EAA

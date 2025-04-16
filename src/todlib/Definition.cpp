@@ -10,7 +10,7 @@
 #include "paklib/PakInterface.h"
 #include "todlib/Reanimator.h"
 #include "zlib.h"
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 #include <cassert>
 #include <chrono>
 #include <cstddef>

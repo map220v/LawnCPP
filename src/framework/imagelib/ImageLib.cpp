@@ -9,39 +9,142 @@
 
 #include "paklib/PakInterface.h"
 
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 
 #include <cmath>
 
 using namespace ImageLib;
 
+typedef struct IOStreamStdioFPData
+{
+    FILE *fp;
+    bool autoclose;
+} IOStreamStdioFPData;
+
+static Sint64 SDLCALL stdio_seek(void *userdata, Sint64 offset, SDL_IOWhence whence)
+{
+    FILE *fp = ((IOStreamStdioFPData *) userdata)->fp;
+    int stdiowhence;
+
+    switch (whence) {
+    case SDL_IO_SEEK_SET:
+        stdiowhence = SEEK_SET;
+        break;
+    case SDL_IO_SEEK_CUR:
+        stdiowhence = SEEK_CUR;
+        break;
+    case SDL_IO_SEEK_END:
+        stdiowhence = SEEK_END;
+        break;
+    default:
+        SDL_SetError("Unknown value for 'whence'");
+        return -1;
+    }
+
+    if (fseek(fp, offset, stdiowhence) == 0) {
+        const Sint64 pos = ftell(fp);
+        if (pos < 0) {
+            SDL_SetError("Couldn't get stream offset");
+            return -1;
+        }
+        return pos;
+    }
+    SDL_SetError("Couldn't seek in stream");
+    return -1;
+}
+
+static size_t SDLCALL stdio_read(void *userdata, void *ptr, size_t size, SDL_IOStatus *status)
+{
+    FILE *fp = ((IOStreamStdioFPData *) userdata)->fp;
+    const size_t bytes = fread(ptr, 1, size, fp);
+    *status = SDL_IO_STATUS_READY;
+    if (bytes == 0 && ferror(fp)) {
+        SDL_SetError("Couldn't read stream");
+        *status = SDL_IO_STATUS_ERROR;
+    }
+    return bytes;
+}
+
+static size_t SDLCALL stdio_write(void *userdata, const void *ptr, size_t size, SDL_IOStatus *status)
+{
+    FILE *fp = ((IOStreamStdioFPData *) userdata)->fp;
+    const size_t bytes = fwrite(ptr, 1, size, fp);
+    *status = SDL_IO_STATUS_READY;
+    if (bytes == 0 && ferror(fp)) {
+        SDL_SetError("Couldn't write stream");
+        *status = SDL_IO_STATUS_ERROR;
+    }
+    return bytes;
+}
+
+static bool SDLCALL stdio_close(void *userdata)
+{
+    IOStreamStdioFPData *rwopsdata = (IOStreamStdioFPData *) userdata;
+    bool status = true;
+    if (rwopsdata->autoclose) {
+        if (fclose(rwopsdata->fp) != 0) {
+            SDL_SetError("Couldn't close stream");
+            status = false;
+        }
+    }
+    return status;
+}
+
+SDL_IOStream *SDL_RWFromFP(FILE *fp, bool autoclose)
+{
+    SDL_IOStreamInterface iface;
+    IOStreamStdioFPData *rwopsdata;
+    SDL_IOStream *rwops;
+
+    rwopsdata = (IOStreamStdioFPData *) SDL_malloc(sizeof (*rwopsdata));
+    if (!rwopsdata) {
+        return NULL;
+    }
+
+    SDL_INIT_INTERFACE(&iface);
+    /* There's no stdio_size because SDL_GetIOSize emulates it the same way we'd do it for stdio anyhow. */
+    iface.seek = stdio_seek;
+    iface.read = stdio_read;
+    iface.write = stdio_write;
+    iface.close = stdio_close;
+
+    rwopsdata->fp = fp;
+    rwopsdata->autoclose = autoclose;
+
+    rwops = SDL_OpenIO(&iface, rwopsdata);
+    if (!rwops) {
+        iface.close(rwopsdata);
+    }
+    return rwops;
+}
+
 std::unique_ptr<Image> GetImageWithSDL(const std::string &theFileName) {
     PFILE *aPFile = gPakInterface->FOpen(theFileName.c_str(), "rb");
     if (!aPFile) return nullptr;
 
-    SDL_RWops *aRwops = nullptr;
+    SDL_IOStream *aIOStream = nullptr;
 
     if (aPFile->mRecord != nullptr) {
         const auto aDst = alloca(aPFile->mRecord->mSize);
         gPakInterface->FRead(aDst, aPFile->mRecord->mSize, 1, aPFile);
-        aRwops = SDL_RWFromConstMem(aDst, aPFile->mRecord->mSize);
+        aIOStream = SDL_IOFromConstMem(aDst, aPFile->mRecord->mSize);
     } else {
-        aRwops = SDL_RWFromFP(aPFile->mFP, SDL_FALSE);
+        aIOStream = SDL_RWFromFP(aPFile->mFP, false);
     }
 
-    if (!aRwops) {
+    if (!aIOStream) {
         gPakInterface->FClose(aPFile);
         return nullptr;
     }
 
-    SDL_Surface *aSurface = IMG_Load_RW(aRwops, 1);
+    SDL_Surface *aSurface = IMG_Load_IO(aIOStream, true);
     gPakInterface->FClose(aPFile);
 
     if (!aSurface) return nullptr;
 
-    const auto aSurface32 = SDL_ConvertSurfaceFormat(aSurface, SDL_PIXELFORMAT_ARGB8888, 0);
-    SDL_FreeSurface(aSurface);
+    const auto aSurface32 = SDL_ConvertSurface(aSurface, SDL_PIXELFORMAT_ARGB8888);
+    SDL_DestroySurface(aSurface);
 
     if (!aSurface32) return nullptr;
 
@@ -52,16 +155,14 @@ std::unique_ptr<Image> GetImageWithSDL(const std::string &theFileName) {
     // Copy the pixels
     SDL_memcpy(anImage->mBits.get(), aSurface32->pixels, bufferSize * sizeof(uint32_t));
 
-    SDL_FreeSurface(aSurface32);
+    SDL_DestroySurface(aSurface32);
 
     return anImage;
 }
 
 bool ImageLib::WriteJPEGImage(const std::string &theFileName, const Image *theImage) {
-    const auto aSurface = SDL_CreateRGBSurfaceFrom(
-        theImage->mBits.get(), theImage->mWidth, theImage->mHeight, 32, theImage->mWidth * 4, 0x00FF0000, 0x0000FF00,
-        0x000000FF, 0xFF000000
-    );
+    const auto aSurface = SDL_CreateSurfaceFrom(theImage->mWidth, theImage->mHeight, SDL_GetPixelFormatForMasks(32,
+        0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000), theImage->mBits.get(), theImage->mWidth * 4);
     if (aSurface == nullptr) return false;
     const auto aResult = IMG_SaveJPG(aSurface, theFileName.c_str(), 80);
     if (aResult != 0) return false;
@@ -69,10 +170,8 @@ bool ImageLib::WriteJPEGImage(const std::string &theFileName, const Image *theIm
 }
 
 bool ImageLib::WritePNGImage(const std::string &theFileName, const Image *theImage) {
-    const auto aSurface = SDL_CreateRGBSurfaceFrom(
-        theImage->mBits.get(), theImage->mWidth, theImage->mHeight, 32, theImage->mWidth * 4, 0x00FF0000, 0x0000FF00,
-        0x000000FF, 0xFF000000
-    );
+    const auto aSurface = SDL_CreateSurfaceFrom(theImage->mWidth, theImage->mHeight, SDL_GetPixelFormatForMasks(32,
+        0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000), theImage->mBits.get(), theImage->mWidth * 4);
     if (aSurface == nullptr) return false;
     const auto aResult = IMG_SavePNG(aSurface, theFileName.c_str());
     if (aResult != 0) return false;

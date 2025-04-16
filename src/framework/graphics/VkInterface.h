@@ -16,6 +16,8 @@ public:
     static int
     CreateCursor(int xHotSpot, int yHotSpot, int nWidth, int nHeight, const void *pvANDPlane, const void *pvXORPlane);
     static void EnforceCursor();
+    static void StartTextInput();
+    static void StopTextInput();
     static void ShowWindow();
     void PollEvents();
     static bool IsFocused();
@@ -28,11 +30,11 @@ private:
     bool windowShouldClose = false;
     static void framebufferResizeCallback();
     static void windowFocusCallback(bool focused);
-    static void cursorPositionCallback(double xpos, double ypos);
-    static void mouseWheelCallback(double xoffset, double yoffset);
-    void mouseButtonCallback(int button, int state, int clicks) const;
-    static void keyCallback(uint32_t key, uint8_t state);
-    static void charCallback(char codepoint[32]);
+    static void cursorPositionCallback(float xpos, float ypos);
+    static void mouseWheelCallback(float xoffset, float yoffset);
+    void mouseButtonCallback(int button, bool down, int clicks) const;
+    static void keyCallback(uint32_t key, bool down);
+    static void charCallback(const char codepoint[32]);
     static void cursorEnterCallback(int entered);
     void windowCloseCallback();
 };
