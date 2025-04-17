@@ -214,6 +214,7 @@ std::mutex renderMutex;
 VkImage *windowImage;
 glm::vec4 windowImageClipRect;
 double windowImageScale;
+VkSurfaceTransformFlagBitsKHR surfaceRotation;
 
 bool framebufferResized = false;
 
@@ -361,13 +362,33 @@ void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
     const SexyRGBA color = Color(255, 255, 255, 255).ToRGBA();
+    glm::vec4 vertices[4];
+    if (surfaceRotation & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR) {
+        vertices[0] = glm::vec4(1, -1, 0, 0);
+        vertices[1] = glm::vec4(-1, -1, 0, 1);
+        vertices[2] = glm::vec4(1, 1, 1, 0);
+        vertices[3] = glm::vec4(-1, 1, 1, 1);
+    }
+    else if (surfaceRotation & VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR) {
+        vertices[0] = glm::vec4(1, 1, 0, 0);
+        vertices[1] = glm::vec4(1, -1, 0, 1);
+        vertices[2] = glm::vec4(-1, 1, 1, 0);
+        vertices[3] = glm::vec4(-1, -1, 1, 1);
+    }
+    else if (surfaceRotation & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
+        vertices[0] = glm::vec4(-1, 1, 0, 0);
+        vertices[1] = glm::vec4(1, 1, 0, 1);
+        vertices[2] = glm::vec4(-1, -1, 1, 0);
+        vertices[3] = glm::vec4(1, -1, 1, 1);
+    }
+    else {
+        vertices[0] = glm::vec4(-1, -1, 0, 0);
+        vertices[1] = glm::vec4(-1, 1, 0, 1);
+        vertices[2] = glm::vec4(1, -1, 1, 0);
+        vertices[3] = glm::vec4(1, 1, 1, 1);
+    }
     const ImagePushConstants constants = {
-        {
-         glm::vec4(-1, -1, 0.0, 0.0),
-         glm::vec4(-1, 1, 0.0, 1.0),
-         glm::vec4(1, -1, 1.0, 0.0),
-         glm::vec4(1, 1, 1.0, 1.0),
-         },
+        {vertices[0], vertices[1], vertices[2], vertices[3]},
         {color, color, color, color},
         true,
         true,
@@ -1055,9 +1076,22 @@ VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &avai
 }
 
 VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
-    if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
-        return capabilities.currentExtent;
-    } else {
+    VkExtent2D extent;
+    surfaceRotation = capabilities.currentTransform;
+    if (surfaceRotation & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
+        surfaceRotation & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
+        // Swap to get identity width and height
+        extent.height = capabilities.currentExtent.width;
+        extent.width = capabilities.currentExtent.height;
+    }
+    else {
+        extent.height = capabilities.currentExtent.height;
+        extent.width = capabilities.currentExtent.width;
+    }
+    if (extent.width != std::numeric_limits<uint32_t>::max()) {
+        return extent;
+    }
+    else {
         int width, height;
         SDL_GetWindowSizeInPixels(window, &width, &height);
 
@@ -1142,7 +1176,10 @@ void cleanupSwapChain() {
 }
 
 void setWindowDimensions() {
-    constexpr glm::vec2 forceAspect = {4, 3};
+    glm::vec2 forceAspect = {4, 3};
+    if (surfaceRotation & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
+        surfaceRotation & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR)
+        forceAspect = {3, 4};
     const double ratioW = swapChainExtent.width / forceAspect.x;
     const double ratioH = swapChainExtent.height / forceAspect.y;
     const bool pillarboxed = ratioW > ratioH;
@@ -1154,7 +1191,11 @@ void setWindowDimensions() {
     windowImageClipRect.y = pillarboxed ? 0 : (swapChainExtent.height - newHeight) / 2.0;
     windowImageClipRect.z = newWidth;
     windowImageClipRect.w = newHeight;
-    windowImageScale = pillarboxed ? newWidth / windowImage->mWidth : newHeight / windowImage->mHeight;
+    if (surfaceRotation & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
+        surfaceRotation & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR)
+        windowImageScale = pillarboxed ? newWidth / windowImage->mHeight : newHeight / windowImage->mWidth;
+    else
+        windowImageScale = pillarboxed ? newWidth / windowImage->mWidth : newHeight / windowImage->mHeight;
     fmt::println(
         "x: {}, y: {}, z: {}, w: {}, scale: {}", windowImageClipRect.x, windowImageClipRect.y, windowImageClipRect.z,
         windowImageClipRect.w, windowImageScale
@@ -1607,7 +1648,11 @@ void VkInterface::cursorEnterCallback(int entered) {
 }
 
 void VkInterface::cursorPositionCallback(float xpos, float ypos) {
-    cursorPos = {(xpos - windowImageClipRect.x) / windowImageScale, (ypos - windowImageClipRect.y) / windowImageScale};
+    if (surfaceRotation & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR ||
+        surfaceRotation & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR)
+        cursorPos = {(xpos - windowImageClipRect.y) / windowImageScale, (ypos - windowImageClipRect.x) / windowImageScale};
+    else
+        cursorPos = {(xpos - windowImageClipRect.x) / windowImageScale, (ypos - windowImageClipRect.y) / windowImageScale};
 
     glm::vec<2, int> intPos = cursorPos;
     widgetManager->RemapMouse(intPos.x, intPos.y);
