@@ -35,71 +35,15 @@ float Sexy::Rand(float range) { return gMTRand.Next(range); }
 
 void Sexy::SRand(uint32_t theSeed) { gMTRand.SRand(theSeed); }
 
-bool Sexy::CheckFor98Mill() {
-    unreachable(); // FIXME (sort of, really it just needs removing)
-    /*
-        static bool needOsCheck = true;
-        static bool is98Mill = false;
-
-        if (needOsCheck)
-        {
-            // bool invalid = false; // unused
-            OSVERSIONINFOEXA osvi;
-            ZeroMemory(&osvi, sizeof(OSVERSIONINFOEXA));
-
-            osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXA);
-            if( GetVersionExA((LPOSVERSIONINFOA)&osvi) == 0)
-            {
-                osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFOA);
-                if ( GetVersionExA((LPOSVERSIONINFOA)&osvi) == 0)
-                    return false;
-            }
-
-            needOsCheck = false;
-            is98Mill = osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS; // let's check Win95, 98, *AND* ME.
-        }
-
-        return is98Mill;*/
-}
-
-bool Sexy::CheckForVista() {
-    unreachable(); // FIXME (sort of, really it just needs removing)
-    /*
-    static bool needOsCheck = true;
-    static bool isVista = false;
-
-    if (needOsCheck)
-    {
-        // bool invalid = false; // unused
-        OSVERSIONINFOEXA osvi;
-        ZeroMemory(&osvi, sizeof(OSVERSIONINFOEXA));
-
-        osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXA);
-        if( GetVersionExA((LPOSVERSIONINFOA)&osvi) == 0)
-        {
-            osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFOA);
-            if ( GetVersionExA((LPOSVERSIONINFOA)&osvi) == 0)
-                return false;
-        }
-
-        needOsCheck = false;
-        isVista = osvi.dwMajorVersion >= 6;
-    }
-
-    return isVista;*/
-}
-
 std::string Sexy::GetAppDataFolder() { return Sexy::gAppDataFolder; }
 
 void Sexy::SetAppDataFolder(const std::string &thePath) {
-    if (CheckForVista()) {
-        std::string aPath = thePath;
-        if (!aPath.empty()) {
-            if (aPath[aPath.length() - 1] != '\\' && aPath[aPath.length() - 1] != '/') aPath += '\\';
-        }
-
-        Sexy::gAppDataFolder = aPath;
+    std::string aPath = thePath;
+    if (!aPath.empty()) {
+        if (aPath[aPath.length() - 1] != '\\' && aPath[aPath.length() - 1] != '/') aPath += '/';
     }
+
+    Sexy::gAppDataFolder = aPath;
 }
 
 std::string Sexy::URLEncode(const std::string &theString) {
@@ -752,7 +696,11 @@ std::string Sexy::AddTrailingSlash(const std::string &theDirectory, bool backSla
 
 time_t Sexy::GetFileDate(const std::string &theFileName) {
     const auto fileTime = std::filesystem::last_write_time(theFileName);
-    const auto systemTime = std::chrono::clock_cast<std::chrono::system_clock>(fileTime);
+    const auto systemTime = std::chrono::system_clock::time_point(
+        std::chrono::duration_cast<std::chrono::system_clock::duration>(
+            fileTime.time_since_epoch()
+        )
+    );
     return std::chrono::system_clock::to_time_t(systemTime);
 }
 

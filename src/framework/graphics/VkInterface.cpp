@@ -127,6 +127,7 @@ VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
 void createSwapChain();
 void cleanupSwapChain();
 void recreateSwapChain();
+void recreateSurface();
 void createSurface();
 void createLogicalDevice();
 
@@ -1146,7 +1147,10 @@ void createSwapChain() {
     }
 
     createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
-    createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    if (swapChainSupport.capabilities.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
+        createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    else
+        createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
     createInfo.presentMode = presentMode;
     createInfo.clipped = VK_TRUE;
     createInfo.oldSwapchain = VK_NULL_HANDLE;
@@ -1221,6 +1225,27 @@ void recreateSwapChain() {
 
     cleanupSwapChain();
 
+    createSwapChain();
+    createImageViews();
+    createFramebuffers();
+    setWindowDimensions();
+}
+
+void recreateSurface() {
+    int width = 0, height = 0;
+
+    SDL_GetWindowSizeInPixels(window, &width, &height);
+    while (width == 0 || height == 0) {
+        SDL_GetWindowSizeInPixels(window, &width, &height);
+        std::this_thread::sleep_for(std::chrono::duration<double>(0.01));
+    }
+
+    vkDeviceWaitIdle(device);
+
+    cleanupSwapChain();
+    SDL_Vulkan_DestroySurface(instance, surface, nullptr);
+
+    createSurface();
     createSwapChain();
     createImageViews();
     createFramebuffers();
@@ -1606,6 +1631,9 @@ void VkInterface::RehupFocus() {
         widgetManager->mApp->mHasFocus = wantHasFocus;
 
         if (widgetManager->mApp->mHasFocus) {
+//#ifdef __ANDROID__
+//            widgetManager->mApp->mPaused = false;
+//#endif
             if (widgetManager->mApp->mMuteOnLostFocus) widgetManager->mApp->Unmute(true);
 
             widgetManager->GotFocus();
@@ -1618,6 +1646,10 @@ void VkInterface::RehupFocus() {
 
             ReleaseMouseCapture();
             widgetManager->DoMouseUps();
+//Current official version behaviour
+//#ifdef __ANDROID__
+//            widgetManager->mApp->mPaused = true;
+//#endif
         }
     }
 }
@@ -1747,6 +1779,7 @@ void initSDL(const int width, const int height, const bool fullscreen) {
     }
 
     SDL_SetHint(SDL_HINT_IME_IMPLEMENTED_UI, "1");
+    SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
 
     window = SDL_CreateWindow("Plants Vs Zombies", width, height, flags);
 }
@@ -1865,6 +1898,10 @@ void VkInterface::Draw() {
         recreateSwapChain();
         renderMutex.unlock();
         return;
+    } else if (result == VK_ERROR_SURFACE_LOST_KHR) {
+        recreateSurface();
+        renderMutex.unlock();
+        return;
     } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
         throw std::runtime_error("failed to acquire swap chain image!");
     }
@@ -1912,6 +1949,9 @@ void VkInterface::Draw() {
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) {
         framebufferResized = false;
         recreateSwapChain();
+    } else if (result == VK_ERROR_SURFACE_LOST_KHR) { /* If we are here then app is already crashing... */
+        framebufferResized = false;
+        recreateSurface();
     } else if (result != VK_SUCCESS) {
         throw std::runtime_error("failed to present swap chain image!");
     }

@@ -241,7 +241,11 @@ SexyAppBase::SexyAppBase() {
     // Fight me, this feature sucks dicks.
     // I want there to be sound when I defocus my window.
     // I can mute it if I want it muted. -- Aaron.
+#ifndef __ANDROID__
     mMuteOnLostFocus = false;
+#else
+    mMuteOnLostFocus = true;
+#endif
     mCurHandleNum = 0;
     mFPSTime = std::chrono::milliseconds(0);
     mFPSStartTick = std::chrono::high_resolution_clock::now();
@@ -4536,10 +4540,10 @@ void SexyAppBase::Init() {
 
     if (mShutdown) return;
 
-    InitPropertiesHook();
     if (!ChangeDirHook(mChangeDirTo.c_str())) {
         std::filesystem::current_path(mChangeDirTo);
     }
+    InitPropertiesHook();
 
     mRegKey = "PlantsVsZombies";
     {

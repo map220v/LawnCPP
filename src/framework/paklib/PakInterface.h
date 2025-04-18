@@ -18,11 +18,12 @@ struct FileTime {
         uint64_t winFileTime = (((uint64_t)dwHighDateTime << 32) | dwLowDateTime) - gapOfWin32UnixEpoch;
 
         // number of 100 nanoseconds since Jan 1st 1970
-        auto utc_time = std::chrono::utc_clock::time_point(std::chrono::duration_cast<std::chrono::utc_clock::duration>(
+        auto system_time =
+            std::chrono::system_clock::time_point(std::chrono::duration_cast<std::chrono::system_clock::duration>(
             std::chrono::duration<uint64_t, std::ratio<1, 10000000>>(winFileTime)
         ));
 
-        return std::chrono::clock_cast<std::chrono::file_clock>(utc_time);
+        return std::chrono::file_clock::from_sys(system_time);
     }
 };
 

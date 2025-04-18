@@ -624,8 +624,6 @@ void ZenGarden::RemoveHappyEffect(const Plant *thePlant) const {
     }
 }
 
-inline auto toLocalTime(const TimePoint &t) { return std::chrono::current_zone()->to_local(t); }
-
 inline auto compareFloorDaysLessEqual(const auto &l, const auto &r) {
     return std::chrono::floor<std::chrono::days>(l) <= std::chrono::floor<std::chrono::days>(r);
 }
@@ -638,10 +636,8 @@ bool ZenGarden::WasPlantNeedFulfilledToday(const PottedPlant *thePottedPlant) {
     }
 
     return compareFloorDaysLessEqual(
-        toLocalTime(aNow), toLocalTime(TimeFromUnixEpoch(thePottedPlant->mLastNeedFulfilledTime))
+        aNow, TimeFromUnixEpoch(thePottedPlant->mLastNeedFulfilledTime)
     );
-    // return std::chrono::floor<std::chrono::days>(aNowTM) <=
-    // std::chrono::floor<std::chrono::days>(aLastNeedFulfilledTM);
 }
 
 // 0x51E910
@@ -652,7 +648,7 @@ bool ZenGarden::PlantShouldRefreshNeed(const PottedPlant *thePottedPlant) {
     }
 
     return compareFloorDaysLessEqual(
-        toLocalTime(aNow), toLocalTime(TimeFromUnixEpoch(thePottedPlant->mLastWateredTime))
+        aNow, TimeFromUnixEpoch(thePottedPlant->mLastWateredTime)
     );
 }
 

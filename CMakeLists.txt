@@ -90,10 +90,16 @@ else ()
     )
 
     if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND UNIX)
-        set(warn_flags
-                ${warn_flags}
-                "-fsanitize=address,undefined"
-        )
+        if (ANDROID)
+            set(warn_flags
+                    ${warn_flags}
+            )
+        else ()
+            set(warn_flags
+                    ${warn_flags}
+                    "-fsanitize=address,undefined"
+            )
+        endif ()
     endif ()
 endif ()
 
@@ -108,7 +114,12 @@ if (MSVC)
     ENABLE_LANGUAGE(RC)
 endif ()
 
-add_executable(${PROJECT_NAME})
+if (NOT ANDROID)
+    add_executable(${PROJECT_NAME})
+else ()
+    # Required for SDL_main on Android
+    add_library(${PROJECT_NAME} SHARED)
+endif ()
 target_compile_options(${PROJECT_NAME} PRIVATE ${warn_flags})
 target_link_options(${PROJECT_NAME} PRIVATE ${warn_flags})
 

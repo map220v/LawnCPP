@@ -23,7 +23,11 @@ class VkImage;
 
 constexpr int NUM_IMAGE_SWAPS = 3;
 
+#ifndef __ANDROID__
 constexpr VkFormat pixelFormat = VK_FORMAT_B8G8R8A8_UNORM;
+#else
+constexpr VkFormat pixelFormat = VK_FORMAT_R8G8B8A8_UNORM;
+#endif
 
 extern std::mutex renderMutex;
 

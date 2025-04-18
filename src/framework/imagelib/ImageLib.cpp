@@ -143,7 +143,11 @@ std::unique_ptr<Image> GetImageWithSDL(const std::string &theFileName) {
 
     if (!aSurface) return nullptr;
 
+#ifndef __ANDROID__
     const auto aSurface32 = SDL_ConvertSurface(aSurface, SDL_PIXELFORMAT_ARGB8888);
+#else
+    const auto aSurface32 = SDL_ConvertSurface(aSurface, SDL_PIXELFORMAT_ABGR8888);
+#endif
     SDL_DestroySurface(aSurface);
 
     if (!aSurface32) return nullptr;

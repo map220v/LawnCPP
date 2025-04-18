@@ -10,6 +10,9 @@
 #include "widget/Checkbox.h"
 #include "widget/Dialog.h"
 #include <chrono>
+#ifdef __ANDROID__
+#include <time.h>
+#endif
 
 int gLawnEditWidgetColors[][4] = {
     {0,   0,   0,   0  },
@@ -109,6 +112,7 @@ std::string GetSavedGameName(GameMode theGameMode, int theProfileId) {
 
 // 0x456980
 int GetCurrentDaysSince2000() {
+#ifndef __ANDROID__
     const auto aLocalNow = std::chrono::current_zone()->to_local(std::chrono::system_clock::now());
 
     const auto Jan1st2000 = std::chrono::current_zone()->to_local(std::chrono::sys_days(
@@ -116,4 +120,12 @@ int GetCurrentDaysSince2000() {
     ));
 
     return std::chrono::duration_cast<std::chrono::days>(aLocalNow - Jan1st2000).count();
+#else
+    time_t aNow = time(0);
+    tm aLocalNow;
+    localtime_r(&aNow, &aLocalNow);
+
+    int dy = aLocalNow.tm_year - 100;
+    return dy * 365 + (dy - 1) / 400 - (dy - 1) / 100 + (dy - 1) / 4 + aLocalNow.tm_yday + 1;
+#endif
 }
