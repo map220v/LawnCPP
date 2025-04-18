@@ -224,7 +224,7 @@ bool XMLParser::GetUTF16BEChar(wchar_t *theChar, bool *error) {
 }
 
 bool XMLParser::OpenFile(const std::string &theFileName) {
-    mFile = p_fopen(theFileName.c_str(), "r");
+    mFile = gPakInterface->FOpen(theFileName.c_str(), "r");
 
     if (mFile == nullptr) {
         mLineNum = 0;
