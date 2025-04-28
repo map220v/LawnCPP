@@ -29,9 +29,9 @@ void ReanimAtlas::ReanimAtlasDispose() {
 }
 
 ReanimAtlasImage *ReanimAtlas::GetEncodedReanimAtlas(Image *theImage) {
-    if (theImage == nullptr || reinterpret_cast<intptr_t>(theImage) > 1000) return nullptr;
+    if (theImage == nullptr || reinterpret_cast<uintptr_t>(theImage) > 1000) return nullptr;
 
-    const intptr_t aAtlasIndex = reinterpret_cast<intptr_t>(theImage) - 1;
+    const uintptr_t aAtlasIndex = reinterpret_cast<uintptr_t>(theImage) - 1;
     TOD_ASSERT(aAtlasIndex >= 0 && aAtlasIndex < mImageCount);
     return &mImageArray[aAtlasIndex];
 }
@@ -79,7 +79,7 @@ static int GetClosestPowerOf2Above(int theNum) {
 int ReanimAtlas::PickAtlasWidth() const {
     int totalArea = 0;
     int aMaxWidth = 0;
-    for (int i = 0; i < mImageCount; i++) {
+    for (unsigned int i = 0; i < mImageCount; i++) {
         const ReanimAtlasImage *aImage = &mImageArray[i];
         totalArea += aImage->mWidth * aImage->mHeight;
         if (aMaxWidth <= aImage->mWidth + 2) aMaxWidth = aImage->mWidth + 2;
@@ -165,7 +165,7 @@ void ReanimAtlas::ArrangeImages(int &theAtlasWidth, int &theAtlasHeight) {
     theAtlasWidth = PickAtlasWidth();
     theAtlasHeight = 0;
 
-    for (int i = 0; i < mImageCount; i++) {
+    for (unsigned int i = 0; i < mImageCount; i++) {
         ReanimAtlasImage *aImage = &mImageArray[i];
         PlaceAtlasImage(aImage, i, theAtlasWidth);
 
@@ -191,7 +191,7 @@ void ReanimAtlas::AddImage(Image *theImage) {
 }
 
 int ReanimAtlas::FindImage(const Image *theImage) {
-    for (int i = 0; i < mImageCount; i++)
+    for (unsigned int i = 0; i < mImageCount; i++)
         if (mImageArray[i].mOriginalImage == theImage) return i;
 
     return -1;
@@ -219,7 +219,7 @@ void ReanimAtlas::ReanimAtlasCreate(const ReanimatorDefinition *theReanimDef) {
         {
             Image *&aImage = aTrack->mTransforms[aKeyIndex].mImage;
             if (aImage != nullptr && aImage->mWidth <= 254 && aImage->mHeight <= 254) {
-                const intptr_t aImageIndex = FindImage(aImage);
+                const uintptr_t aImageIndex = FindImage(aImage);
                 TOD_ASSERT(aImageIndex >= 0);
                 aImage = reinterpret_cast<Image *>(aImageIndex + 1); // ★ 将图片在数组中的序号作为 Image* 修改动画定义
             }
@@ -233,7 +233,7 @@ void ReanimAtlas::ReanimAtlasCreate(const ReanimatorDefinition *theReanimDef) {
 
     mMemoryImage = std::make_unique<Vk::VkImage>(aAtlasWidth, aAtlasHeight);
     Graphics aMemoryGraphis(mMemoryImage.get());
-    for (int aImageIndex = 0; aImageIndex < mImageCount; aImageIndex++) {
+    for (unsigned int aImageIndex = 0; aImageIndex < mImageCount; aImageIndex++) {
         const ReanimAtlasImage *aImage = &mImageArray[aImageIndex];
         if (!aImage->mOriginalImage->mWidth || !aImage->mOriginalImage->mHeight) continue;
         aMemoryGraphis.DrawImage(aImage->mOriginalImage, aImage->mX, aImage->mY); // 将原贴图绘制在图集上

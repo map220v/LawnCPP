@@ -31,7 +31,7 @@ bool sSortByNonIncreasingHeight(const ReanimAtlasImage &image1, const ReanimAtla
 class ReanimAtlas {
 public:
     ReanimAtlasImage mImageArray[MAX_REANIM_IMAGES]; //+0x0
-    int mImageCount;                                 //+0x500
+    unsigned int mImageCount;                                 //+0x500
     std::unique_ptr<Image> mMemoryImage;             //+0x504
 
 public:
