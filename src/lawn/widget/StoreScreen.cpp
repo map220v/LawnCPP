@@ -857,7 +857,7 @@ void StoreScreen::PurchaseItem(const StoreItem theStoreItem) {
                 mApp->mPlayerInfo->UpdatePurchase(theStoreItem, 1);
             } else if (theStoreItem == STORE_ITEM_TREE_OF_WISDOM) {
                 mApp->mPlayerInfo->mPurchases[theStoreItem] = 1;
-                mApp->mPlayerInfo->mChallengeRecords[GAMEMODE_TREE_OF_WISDOM] = 1;
+                mApp->mPlayerInfo->mChallengeRecords[GAMEMODE_TREE_OF_WISDOM - 1] = 1;
 
                 const auto aDialog = static_cast<LawnDialog *>(mApp->DoDialog(
                     DIALOG_STORE_PURCHASE, true, _S("[VISIT_TREE_HEADER]"), _S("[VISIT_TREE_BODY]"), _S(""),

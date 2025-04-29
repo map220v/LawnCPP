@@ -4737,7 +4737,7 @@ void Challenge::TreeOfWisdomDraw(Graphics *g) {
             aPosY = 60;
         } else {
             aPosX = 390;
-            aPosY = 52;
+            aPosY = 40;
         }
 
         g->DrawImage(Sexy::IMAGE_STORE_SPEECHBUBBLE2, aPosX, aPosY);
@@ -4785,7 +4785,7 @@ void Challenge::TreeOfWisdomInit() {
     aReanimTree->PlayReanim(
         fmt::format("anim_grow{}", aTreeSize).c_str(), ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 18.0f
     );
-    if (aTreeSize == 0 && !mApp->mPlayerInfo->hasPurchaseInitialized(STORE_ITEM_TREE_FOOD)) {
+    if (aTreeSize == 1 && !mApp->mPlayerInfo->hasPurchaseInitialized(STORE_ITEM_TREE_FOOD)) {
         aReanimTree->mFrameCount += aReanimTree->mFrameStart;
         aReanimTree->mFrameStart = 0;
     } else {
@@ -5002,7 +5002,7 @@ void Challenge::TreeOfWisdomTool(int theMouseX, int theMouseY) {
 int Challenge::TreeOfWisdomHitTest(int theX, int theY, HitResult *theHitResult) {
     Rect aTreeRect;
     const int aTreeSize = TreeOfWisdomGetSize();
-    if (aTreeSize <= 1) aTreeRect = Rect(310, 175, 275, 175);
+    if (aTreeSize <= 1) aTreeRect = Rect(310, 275, 175, 175);
     else if (aTreeSize < 7) aTreeRect = Rect(290, 255, 205, 195);
     else if (aTreeSize < 12) aTreeRect = Rect(290, 215, 205, 225);
     else aTreeRect = Rect(280, 155, 225, 305);
