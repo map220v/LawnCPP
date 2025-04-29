@@ -503,7 +503,7 @@ void StoreScreen::UpdateMouse() {
                 case STORE_ITEM_WHEEL_BARROW:        aMessageIndex = 2024; break;
                 case STORE_ITEM_STINKY_THE_SNAIL:    aMessageIndex = 2025; break;
                 case STORE_ITEM_PACKET_UPGRADE:
-                    aMessageIndex = mApp->mPlayerInfo->mPurchases[STORE_ITEM_PACKET_UPGRADE] + 2011;
+                    aMessageIndex = std::min(mApp->mPlayerInfo->mPurchases[STORE_ITEM_PACKET_UPGRADE] + 2011, 2014);
                     break;
                 case STORE_ITEM_POOL_CLEANER:    aMessageIndex = 2026; break;
                 case STORE_ITEM_ROOF_CLEANER:    aMessageIndex = 2027; break;
