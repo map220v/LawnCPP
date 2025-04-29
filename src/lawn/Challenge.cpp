@@ -438,13 +438,13 @@ int Challenge::BeghouledTwistMoveCausesMatch(int theGridX, int theGridY, Beghoul
 
     const SeedType aSeed1 = theBoardState->mSeedType[theGridX][theGridY];
     const SeedType aSeed2 = theBoardState->mSeedType[theGridX + 1][theGridY];
-    const SeedType aSeed3 = theBoardState->mSeedType[theGridX + 1][theGridY + 1];
-    const SeedType aSeed4 = theBoardState->mSeedType[theGridX][theGridY + 1];
+    const SeedType aSeed3 = theBoardState->mSeedType[theGridX][theGridY + 1];
+    const SeedType aSeed4 = theBoardState->mSeedType[theGridX + 1][theGridY + 1];
 
+    theBoardState->mSeedType[theGridX][theGridY] = aSeed3;
     theBoardState->mSeedType[theGridX + 1][theGridY] = aSeed1;
+    theBoardState->mSeedType[theGridX][theGridY + 1] = aSeed4;
     theBoardState->mSeedType[theGridX + 1][theGridY + 1] = aSeed2;
-    theBoardState->mSeedType[theGridX][theGridY + 1] = aSeed3;
-    theBoardState->mSeedType[theGridX][theGridY] = aSeed4;
 
     const int aHasMatch = BeghouledBoardHasMatch(theBoardState);
 
@@ -3109,7 +3109,7 @@ void Challenge::ZombiquariumUpdate() {
 // 0x428510
 void Challenge::ShovelAddWallnuts() {
     for (int aCol = 0; aCol < MAX_GRID_SIZE_X; aCol++) {
-        for (int aRow = 0; aRow < MAX_GRID_SIZE_Y; aRow++) {
+        for (int aRow = 0; aRow < MAX_GRID_SIZE_Y - 1; aRow++) {
             mBoard->AddPlant(aCol, aRow, SEED_WALLNUT, SEED_NONE);
         }
     }
