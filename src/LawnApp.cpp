@@ -653,8 +653,8 @@ void LawnApp::DoPauseDialog() {
     // FinishModelessDialogs();
 
     auto aDialog = static_cast<LawnDialog *>(DoDialog(
-        Dialogs::DIALOG_PAUSED, true, _S("Resume Game" /*"[RESUME_GAME]"*/), _S("Click to resume game"),
-        _S("GAME PAUSED" /*"[GAME_PAUSED]"*/), Dialog::BUTTONS_FOOTER
+        Dialogs::DIALOG_PAUSED, true, _S("GAME PAUSED" /*"[RESUME_GAME]"*/), _S("Click to resume game"),
+        _S("Resume Game" /*"[GAME_PAUSED]"*/), Dialog::BUTTONS_FOOTER
     ));
 
     aDialog->mReanimation->AddReanimation(72.0f, 42.0f, ReanimationType::REANIM_ZOMBIE_NEWSPAPER);
