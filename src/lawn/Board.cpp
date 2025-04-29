@@ -4821,7 +4821,7 @@ void Board::SetTutorialState(const TutorialState theTutorialState) {
 
     case TutorialState::TUTORIAL_LEVEL_2_PICK_UP_SUNFLOWER:
     case TutorialState::TUTORIAL_MORESUN_PICK_UP_SUNFLOWER:
-        TutorialArrowShow(mSeedBank->mX + mSeedBank->mSeedPackets[1].mX, mSeedBank->mX + mSeedBank->mSeedPackets[1].mX);
+        TutorialArrowShow(mSeedBank->mX + mSeedBank->mSeedPackets[1].mX, mSeedBank->mY + mSeedBank->mSeedPackets[1].mY);
         break;
 
     case TutorialState::TUTORIAL_LEVEL_2_PLANT_SUNFLOWER:
